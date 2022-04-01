@@ -2,10 +2,10 @@
   "name": "multiplayer-pacman",
   "version": "0.0.1",
   "description": "Multiplayer pacman game. More information coming soon.",
-  "main": "src/Server.js",
+  "main": "src/backend/Server.js",
   "scripts": {
-    "dev": "nodemon src/server.js",
-    "start": "node src/server.js",
+    "dev": "nodemon backend/Server.js",
+    "start": "node backend/Server.js",
     "test": "jest",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
