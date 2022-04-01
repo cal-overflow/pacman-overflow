@@ -1,0 +1,54 @@
+{
+  "name": "multiplayer-pacman",
+  "version": "0.0.1",
+  "description": "Multiplayer pacman game. More information coming soon.",
+  "main": "src/Server.js",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
+    "test": "jest",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "prepare": "husky install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ChristianLisle/multiplayer-pacman.git"
+  },
+  "keywords": [
+    "PacMan",
+    "Multiplayer",
+    "Multi-Player",
+    "Pac-Man",
+    "multiplayer",
+    "multi-player"
+  ],
+  "author": "Christian Lisle",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ChristianLisle/multiplayer-pacman/issues"
+  },
+  "homepage": "https://github.com/ChristianLisle/multiplayer-pacman#readme",
+  "devDependencies": {
+    "@babel/core": "^7.17.8",
+    "@babel/preset-env": "^7.16.11",
+    "babel-cli": "^6.26.0",
+    "babel-jest": "^27.5.1",
+    "babel-preset-env": "^1.7.0",
+    "eslint": "^8.12.0",
+    "husky": "^7.0.4",
+    "jest": "^27.5.1",
+    "nodemon": "^2.0.15",
+    "superagent": "^7.1.2",
+    "supertest": "^6.2.2"
+  },
+  "dependencies": {
+    "express": "^4.17.3"
+  },
+  "type": "module",
+  "jest": {
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/src/$1"
+    }
+  }
+}
