@@ -18,6 +18,9 @@ $ nvm use
 # install dependencies
 $ npm install
 
+# build tailwind css files
+$ npm run tailwind
+
 # run in development mode (localhost:3000)
 $ npm run dev
 ```
