@@ -32,25 +32,20 @@ describe('Wall', () => {
 
     beforeEach(() => {
       ctxMock = {
-        rect: jest.fn(),
-        stroke: jest.fn()
+        fillRect: jest.fn()
       };
 
       wall.draw(ctxMock);
     });
 
     it('calls the ctx rect() method correctly', () => {
-      expect(ctxMock.rect).toBeCalled();
-      expect(ctxMock.rect).toBeCalledWith(
+      expect(ctxMock.fillRect).toBeCalled();
+      expect(ctxMock.fillRect).toBeCalledWith(
         wall.x,
         wall.y,
         wall.width,
         wall.height
       );
-    });
-
-    it('calls the ctx stroke method', () => {
-      expect(ctxMock.stroke).toBeCalled();
     });
   });
 });

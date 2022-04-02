@@ -137,25 +137,20 @@ describe('Player', () => {
       };
 
       ctxMock = {
-        rect: jest.fn(),
-        stroke: jest.fn()
+        fillRect: jest.fn()
       };
 
       player.draw(ctxMock);
     });
 
-    it('calls the ctx rect() method correctly', () => {
-      expect(ctxMock.rect).toBeCalled();
-      expect(ctxMock.rect).toBeCalledWith(
+    it('calls the ctx fillRect() method correctly', () => {
+      expect(ctxMock.fillRect).toBeCalled();
+      expect(ctxMock.fillRect).toBeCalledWith(
         player.position.x,
         player.position.y,
         player.width,
         player.height
       );
-    });
-
-    it('calls the ctx stroke method', () => {
-      expect(ctxMock.stroke).toBeCalled();
     });
   });
 

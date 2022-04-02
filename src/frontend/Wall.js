@@ -8,7 +8,7 @@ export default class Wall {
   }
 
   draw(ctx) {
-    ctx.rect(this.x, this.y, this.width, this.height);
-    ctx.stroke();
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(this.x, this.y, this.width, this.height);
   }
 }

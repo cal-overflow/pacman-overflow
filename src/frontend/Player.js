@@ -34,8 +34,8 @@ export default class Player {
   }
 
   draw(ctx) {
-    ctx.rect(this.position.x, this.position.y, this.width, this.height);
-    ctx.stroke();
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(this.position.x, this.position.y, this.width, this.height);
   }
 
   stop() {
