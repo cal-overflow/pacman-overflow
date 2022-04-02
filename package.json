@@ -4,12 +4,13 @@
   "description": "Multiplayer pacman game. More information coming soon.",
   "main": "src/backend/Server.js",
   "scripts": {
-    "dev": "nodemon backend/Server.js",
+    "dev": "nodemon backend/Server.js & npm run tailwind:dev & wait",
     "start": "node backend/Server.js",
     "test": "jest",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "tailwind": "npx tailwindcss -c ./tailwind.config.cjs -i ./src/frontend/main.css -o ./src/frontend/styles.css",
+    "tailwind:dev": "npx tailwindcss -c ./tailwind.config.cjs -i ./src/frontend/main.css -o ./src/frontend/styles.css --watch",
     "tailwind:prod": "npx tailwindcss -c ./tailwind.config.cjs -i ./src/frontend/main.css -o ./src/frontend/styles.css --minify",
     "prepare": "husky install"
   },
