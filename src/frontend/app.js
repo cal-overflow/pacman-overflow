@@ -1,19 +1,39 @@
+import Game from './Game.js';
 import Player from './Player.js';
+import Wall from './Wall.js';
 
 const canvas = document.querySelector('canvas');
-const ctx = canvas.getContext('2d');
 const movementKeys = ['w', 'a', 's', 'd', 'ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'];
 
+const game = new Game(canvas);
 const player = new Player();
-player.spawn({ x: 30, y: 30 });
+game.addPlayer(player);
 
-ctx.fillStyle = '#FFFFFF';
-setInterval(() => {
-  player.move();
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.fillRect(player.position.x, player.position.y, 20, 20);
-}, 10);
+// TODO: remove - these are walls for dev purposes
+game.addWall(new Wall({
+  x: 30,
+  y: 100,
+  width: 100,
+  height: 6,
+}));
+game.addWall(new Wall({
+  x: 30,
+  y: 136,
+  width: 100,
+  height: 6,
+}));
 
+// outer gameboard wall
+game.addWall(new Wall({
+  x: 0,
+  y: 0,
+  width: canvas.width,
+  height: canvas.height,
+  isHollow: true
+}));
+
+
+game.start();
 
 document.addEventListener('keydown', (event) => {
   if (movementKeys.includes(event.key)) {
