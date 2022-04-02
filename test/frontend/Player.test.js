@@ -127,6 +127,38 @@ describe('Player', () => {
     });
   });
 
+  describe('draw()', () => {
+    let ctxMock;
+
+    beforeEach(() => {
+      player.position = {
+        x: chance.integer(),
+        y: chance.integer()
+      };
+
+      ctxMock = {
+        rect: jest.fn(),
+        stroke: jest.fn()
+      };
+
+      player.draw(ctxMock);
+    });
+
+    it('calls the ctx rect() method correctly', () => {
+      expect(ctxMock.rect).toBeCalled();
+      expect(ctxMock.rect).toBeCalledWith(
+        player.position.x,
+        player.position.y,
+        player.width,
+        player.height
+      );
+    });
+
+    it('calls the ctx stroke method', () => {
+      expect(ctxMock.stroke).toBeCalled();
+    });
+  });
+
   describe('stop()', () => {
     beforeEach(() => {
       player.stop();
