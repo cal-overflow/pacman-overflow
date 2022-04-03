@@ -110,6 +110,50 @@ describe('Player', () => {
     });
   });
 
+  describe('setNextMovement()', () => {
+    let movement;
+
+    beforeEach(() => {
+      movement = {
+        x: chance.bool() ? 1 : -1
+      };
+
+      player.setNextMovement(movement);
+    });
+
+    it('sets the nextMovement value correctly', () => {
+      const expectedMovement = {
+        ...movement,
+        y: 0
+      };
+
+      expect(player.nextMovement).toMatchObject(expectedMovement);
+    });
+  });
+
+  describe('switchToNextMovement()', () => {
+    let nextMovement;
+
+    beforeEach(() => {
+      nextMovement = {
+        x: chance.bool() ? 1 : -1,
+        y: 0
+      };
+
+      player.nextMovement = nextMovement;
+
+      player.switchToNextMovement();
+    });
+
+    it('changes the movement to the nextMovement value', () => {
+      expect(player.movement).toMatchObject(nextMovement);
+    });
+
+    it('clears the nextMovement value', () => {
+      expect(player.nextMovement).toMatchObject({});
+    });
+  });
+
   describe('move()', () => {
     it('updates the player position according to the movement', () => {
       player.spawn({ x: chance.integer(), y: chance.integer() });
@@ -146,8 +190,8 @@ describe('Player', () => {
     it('calls the ctx fillRect() method correctly', () => {
       expect(ctxMock.fillRect).toBeCalled();
       expect(ctxMock.fillRect).toBeCalledWith(
-        player.position.x,
-        player.position.y,
+        player.position.x - (player.width / 2),
+        player.position.y - (player.height / 2),
         player.width,
         player.height
       );
@@ -164,6 +208,21 @@ describe('Player', () => {
         x: 0,
         y: 0
       });
+    });
+  });
+
+  describe('setUnavailableMovements()', () => {
+    let unavailableMovements;
+
+    beforeEach(() => {
+      unavailableMovements = {};
+      unavailableMovements[chance.bool() ? 'x' : 'y'] = chance.bool() ? 1 : -1;
+
+      player.setUnavailableMovements(unavailableMovements);
+    });
+
+    it('sets the unavailableMovements value correctly', () => {
+      expect(player.unavailableMovements).toMatchObject(unavailableMovements);
     });
   });
 });

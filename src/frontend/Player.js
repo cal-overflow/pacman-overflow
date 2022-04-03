@@ -5,6 +5,7 @@ export default class Player {
     this.height = 20;
     this.isSpawned = false;
     this.movement = { x: 0, y: 0 };
+    this.nextMovement = {};
   }
 
   spawn(position) {
@@ -26,6 +27,18 @@ export default class Player {
     };
   }
 
+  setNextMovement(movement) {
+    this.nextMovement = {
+      x: movement.x ?? 0,
+      y: movement.y ?? 0
+    };
+  }
+
+  switchToNextMovement() {
+    this.movement = { ...this.nextMovement };
+    this.nextMovement = {};
+  }
+
   move() {
     if (this.isSpawned) {
       this.position.x += this.movement.x;
@@ -35,10 +48,14 @@ export default class Player {
 
   draw(ctx) {
     ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(this.position.x, this.position.y, this.width, this.height);
+    ctx.fillRect(this.position.x - (this.width / 2), this.position.y - (this.height / 2), this.width, this.height);
   }
 
   stop() {
     this.setMovement({ x: 0, y: 0 });
+  }
+
+  setUnavailableMovements(unavailableMovements) {
+    this.unavailableMovements = unavailableMovements;
   }
 }
