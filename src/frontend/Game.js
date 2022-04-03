@@ -3,7 +3,8 @@ export default class Game {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
     this.players = [];
-    this.walls = [];
+    this.paths = [];
+    // this.intersections = [];
     this.interval = undefined;
 
     this.ctx.fillStyle = '#FFFFFF';
@@ -11,26 +12,34 @@ export default class Game {
 
   addPlayer(player) {
     this.players.push(player);
-    // TODO: Game class should determine a safe spawn point for this player
-    player.spawn({ x: 16, y: 16 });
+
+    for (const path of this.paths) {
+      // add safety to paths and change this to: if (path.safe)
+      if (!path.safe) {
+        const spawnPoint = {};
+        spawnPoint[path.vertical ? 'x' : 'y'] = path.center;
+        spawnPoint[path.vertical ? 'y' : 'x'] = (path.start + path.end) / 2;
+
+        player.spawn({ ...spawnPoint, path });
+        break;
+      }
+    }
   }
 
   removePlayer(playerToRemove) {
     this.players = this.players.filter((player) => player.id !== playerToRemove.id);
   }
 
-  addWall(wall) {
-    this.walls.push(wall);
+  addPath(path) {
+    this.paths.push(path);
   }
 
-  removeWall(wallToRemove) {
-    this.walls = this.walls.filter((wall) => wall.id !== wallToRemove.id);
+  removePath(pathToRemove) {
+    this.paths = this.paths.filter((path) => path.id !== pathToRemove.id);
   }
 
   start() {
-    this.interval = setInterval(() => {
-      this.update();
-    }, 10);
+    this.interval = setInterval(() => this.update(), 10);
   }
 
   end() {
@@ -40,16 +49,16 @@ export default class Game {
   }
 
   update() {
-    this.handleMovementAndCollisions();
+    // this.handleMovementAndCollisions();
 
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
   
     this.ctx.fillStyle = 'rgba(0, 0, 0, 0)';
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-    
-    // draw walls
-    for (let i = 0; i < this.walls.length; i++) {
-      this.walls[i].draw(this.ctx);
+
+    // draw paths
+    for (let i = 0; i < this.paths.length; i++) {
+      this.paths[i].draw(this.ctx);
     }
 
     // draw players
@@ -57,9 +66,14 @@ export default class Game {
       const player = this.players[i];
       player.move();
       player.draw(this.ctx);
+      
+      // // TODO: delete this
+      // document.getElementById('xCoord').innerHTML = player.position.x;
+      // document.getElementById('yCoord').innerHTML = player.position.y;
     }
   }
 
+  // TODO: delete this, player/wall collisions are not necessary with paths
   // Currently only handles collisions between players and walls
   handleMovementAndCollisions() {
     const wallCushion = 5;

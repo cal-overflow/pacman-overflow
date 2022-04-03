@@ -1,63 +1,56 @@
 import Game from './Game.js';
 import Player from './Player.js';
-import Wall from './Wall.js';
+import Hall from './Hall.js';
+import Intersection from './Intersection.js';
 
 const canvas = document.querySelector('canvas');
 const movementKeys = ['w', 'a', 's', 'd', 'ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'];
 
 const game = new Game(canvas);
+
+const paths = [];
+
+//above
+paths.push(new Hall({
+  vertical: true,
+  center: 250,
+  start: 100,
+  end: 200
+}));
+
+// below
+// paths.push(new Hall({
+//   vertical: true,
+//   center: 250,
+//   start: 280,
+//   end: 350
+// }));
+
+// right
+paths.push(new Hall({
+  horizontal: true,
+  center: 250,
+  start: 280,
+  end: 450
+}));
+
+// left
+// paths.push(new Hall({
+//   horizontal: true,
+//   center: 250,
+//   start: 100,
+//   end: 200
+// }));
+
+game.addPath(paths[0]);
+game.addPath(paths[1]);
+// game.addPath(paths[2]);
+// game.addPath(paths[3]);
+
+game.addPath(new Intersection(paths));
+
 const player = new Player();
 game.addPlayer(player);
-
-// TODO: remove - these are walls for dev purposes
-game.addWall(new Wall({
-  x: 30,
-  y: 30,
-  width: 10,
-  height: 200,
-  isHollow: true
-}));
-game.addWall(new Wall({
-  x: 30,
-  y: 30,
-  width: 40,
-  height: 10,
-  isHollow: true
-}));
-
-// outer gameboard walls
-game.addWall(new Wall({
-  x: 0,
-  y: 0,
-  width: canvas.width,
-  height: 1,
-  isHollow: true
-}));
-
-game.addWall(new Wall({
-  x: 0,
-  y: 0,
-  width: 1,
-  height: canvas.height,
-  isHollow: true
-}));
-
-game.addWall(new Wall({
-  x: canvas.width,
-  y: 0,
-  width: 1,
-  height: canvas.height,
-  isHollow: true
-}));
-
-game.addWall(new Wall({
-  x: 0,
-  y: canvas.height,
-  width: canvas.width,
-  height: 1,
-  isHollow: true
-}));
-
 
 game.start();
 

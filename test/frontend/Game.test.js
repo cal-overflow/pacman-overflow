@@ -1,4 +1,5 @@
 import Game from '@/frontend/Game.js';
+import Hall from '@/frontend/Hall.js';
 import Player from '@/frontend/Player.js';
 import Wall from '@/frontend/Wall.js';
 import Chance from 'chance';
@@ -72,6 +73,30 @@ describe('Game', () => {
       expect(game.walls).not.toContain(wall);
     });
   });
+
+  describe('addPath() and removePath()', () => {
+    let hall;
+
+    beforeEach(() => {
+      hall = new Hall({
+        horizontal: true,
+        center: chance.integer({ min: 0, max: 500 }),
+        start: chance.integer({ min: 0, max: 250 }),
+        end: chance.integer({ min: 251, max: 500 })
+      });
+
+      game.addPath(hall);
+    });
+
+    it('addPath() adds the hall to the game paths', () => {
+      expect(game.paths).toContain(hall);
+    });
+    
+    it('removePath() removes the hall from the game paths', () => {
+      game.removePath(hall);
+      expect(game.paths).not.toContain(hall);
+    });
+  });
   
   describe('start()', () => {
     beforeEach(() => {
@@ -85,20 +110,20 @@ describe('Game', () => {
   });
   
   describe('update()', () => {
-    let players, walls;
+    let players, walls, halls;
 
     beforeEach(() => {
       players = chance.n(() => new Player(), chance.integer({ min: 1, max: 10 }));
-      walls = chance.n(() => new Wall({}), chance.integer({ min: 1, max: 10 }));
+      halls = chance.n(() => new Hall({ start: 1, end: 10 }), chance.integer({ min: 1, max: 10 }));
 
       for (let i = 0; i < players.length; i++) {
         players[i].draw = jest.fn();
         game.addPlayer(players[i]);
       }
 
-      for (let i = 0; i < walls.length; i++) {
-        walls[i].draw = jest.fn();
-        game.addWall(walls[i]);
+      for (let i = 0; i < halls.length; i++) {
+        halls[i].draw = jest.fn();
+        game.addPath(halls[i]);
       }
 
       game.update();
@@ -111,6 +136,12 @@ describe('Game', () => {
     it('draws all walls', () => {
       for (let i = 0; i < walls.length; i++) {
         expect(walls[i].draw).toBeCalled();
+      }
+    });
+
+    it('draws all halls', () => {
+      for (let i = 0; i < halls.length; i++) {
+        expect(halls[i].draw).toBeCalled();
       }
     });
 
