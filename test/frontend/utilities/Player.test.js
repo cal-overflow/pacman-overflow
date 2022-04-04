@@ -1,4 +1,6 @@
-import Player from '@/frontend/Player.js';
+import Intersection from '@/frontend/utilities/Intersection';
+import Path from '@/frontend/utilities/Path.js';
+import Player from '@/frontend/utilities/Player.js';
 import Chance from 'chance';
 
 const chance = new Chance();
@@ -21,15 +23,14 @@ describe('Player', () => {
   });
 
   describe('spawn()', () => {
-    let position;
+    let path, start, end;
 
     beforeEach(() => {
-      position = {
-        x: chance.integer(),
-        y: chance.integer()
-      };
+      start = new Intersection({ x: 0, y: 0 });
+      end = new Intersection({ x: 0, y: chance.integer({ min: 10, max: 100 }) });
+      path = new Path(start, end);
 
-      player.spawn(position);
+      player.spawn(path);
     });
 
     it('sets the player isSpawned value to true', () => {
@@ -37,7 +38,16 @@ describe('Player', () => {
     });
 
     it('sets the player coordinates (position) correctly', () => {
-      expect(player.position).toMatchObject(position);
+      const expectedSpawnPoint = {
+        x: 0,
+        y: (start.position.y + end.position.y) / 2
+      };
+
+      expect(player.position).toMatchObject(expectedSpawnPoint);
+    });
+
+    it('sets the currentPath value correctly', () => {
+      expect(player.currentPath).toEqual(path);
     });
   });
 
@@ -49,6 +59,7 @@ describe('Player', () => {
         y: chance.integer()
       };
       player.movement = { x: -1, y: 0 };
+      player.currentPath = chance.integer();
 
       player.despawn();
     });
@@ -67,61 +78,61 @@ describe('Player', () => {
         y: 0
       });
     });
+
+    it('clears the player currentPath', () => {
+      expect(player.currentPath).toBeUndefined();
+    });
   });
 
   describe('setMovement()', () => {
-    it('sets the movement correctly given both x and y movement', () => {
-      const movement = {
-        x: chance.integer({ min: -1, max: -1 }),
-        y: chance.integer({ min: -1, max: -1 })
-      };
+    describe('given the player tries moving along the wrong axis', () => {
+      beforeEach(() => {
+        player.currentPath = { isHorizontal: true };
 
-      player.setMovement(movement);
+        player.setMovement({ y: 1 });
+      });
 
-      expect(player.movement).toMatchObject(movement);
+      it('sets the nextMovement value correctly', () => {
+        expect(player.nextMovement).toMatchObject({ y: 1 });
+      });
     });
 
-    it('sets the movement correctly given only x movement', () => {
-      player.movement.y = 0;
+    describe('given the player tries moving along the axis (path) correctly', () => {
+      beforeEach(() => {
+        player.currentPath = { isHorizontal: true };
 
-      const movement = { x: chance.integer({ min: -1, max: -1 }) };
-      player.setMovement(movement);
+        player.setMovement({ x: 1 });
+      });
 
-      const expectedMovement = {
-        ...movement,
-        y: 0
-      };
-
-      expect(player.movement).toMatchObject(expectedMovement);
-    });
-
-    it('sets the movement correctly given only y movement', () => {
-      player.movement.x = 0;
-
-      const movement = { y: chance.integer({ min: -1, max: -1 }) };
-      player.setMovement(movement);
-
-      const expectedMovement = {
-        ...movement,
-        x: 0
-      };
-
-      expect(player.movement).toMatchObject(expectedMovement);
+      it('updates their movement correctly', () => {
+        expect(player.movement).toMatchObject({ x: 1, y: 0 });
+      });
     });
   });
 
   describe('move()', () => {
+    let path, start, end;
+
+    beforeEach(() => {
+      start = new Intersection({ x: 0, y: 0 });
+      end = new Intersection({ x: 0, y: chance.integer({ min: 10, max: 100 }) });
+      path = new Path(start, end);
+
+      player.spawn(path);
+    });
+
     it('updates the player position according to the movement', () => {
-      player.spawn({ x: chance.integer(), y: chance.integer() });
-      player.setMovement({ x: 1, y: 0 });
+      player.setMovement({ x: 0, y: 1 });
       
-      const expectedPosition = { x: player.position.x + 1, y: player.position.y };
+      const expectedPosition = { x: player.position.x, y: player.position.y + 1 };
       
       player.move();
       expect(player.position).toMatchObject(expectedPosition);
     });
 
     it('does not change position if player is not spawned', () => {
+      player.despawn();
+
       player.move();
       expect(player.position).toBeUndefined();
     });
@@ -146,8 +157,8 @@ describe('Player', () => {
     it('calls the ctx fillRect() method correctly', () => {
       expect(ctxMock.fillRect).toBeCalled();
       expect(ctxMock.fillRect).toBeCalledWith(
-        player.position.x,
-        player.position.y,
+        player.position.x - (player.width / 2),
+        player.position.y - (player.height / 2),
         player.width,
         player.height
       );
