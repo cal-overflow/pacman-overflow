@@ -1,38 +1,15 @@
-import Game from './Game.js';
-import Player from './Player.js';
-import Wall from './Wall.js';
+import Game from './utilities/Game.js';
+import Player from './utilities/Player.js';
 
 const canvas = document.querySelector('canvas');
 const movementKeys = ['w', 'a', 's', 'd', 'ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'];
 
 const game = new Game(canvas);
 const player = new Player();
+
+await game.loadGameBoard('./maps/dev.json'); // load the gameboard/map from json file
+
 game.addPlayer(player);
-
-// TODO: remove - these are walls for dev purposes
-game.addWall(new Wall({
-  x: 30,
-  y: 100,
-  width: 100,
-  height: 6,
-}));
-game.addWall(new Wall({
-  x: 30,
-  y: 136,
-  width: 100,
-  height: 6,
-}));
-
-// outer gameboard wall
-game.addWall(new Wall({
-  x: 0,
-  y: 0,
-  width: canvas.width,
-  height: canvas.height,
-  isHollow: true
-}));
-
-
 game.start();
 
 document.addEventListener('keydown', (event) => {

@@ -1,3 +1,4 @@
+import Intersection from './Intersection.js';
 import Path from './Path.js';
 
 export default class Game {
@@ -23,9 +24,18 @@ export default class Game {
     }
   }
 
-  initializeBoard(intersections) {
-    this.intersections = intersections;
+  async loadGameBoard(path) {
+    const res = await fetch(path);
+    const map = await res.json();
 
+    for (const position of map.intersections) {
+      this.intersections.push(new Intersection(position));
+    }
+
+    this.generatePaths();
+  }
+
+  generatePaths() {
     for (const start of this.intersections) {
       for (const end of this.intersections) {
         if (start === end || start.position.x > end.position.x || start.position.y > end.position.y) continue;
