@@ -16,7 +16,6 @@ document.addEventListener('keydown', (event) => {
   if (movementKeys.includes(event.key)) {
     event.preventDefault();
 
-    player.stop();
     if (event.key === 'w' || event.key === 'ArrowUp') {
       player.setMovement({ y: -1 });
     }
