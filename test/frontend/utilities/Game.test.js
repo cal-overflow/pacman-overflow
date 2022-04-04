@@ -1,6 +1,5 @@
-import Game from '@/frontend/Game.js';
-import Player from '@/frontend/Player.js';
-import Wall from '@/frontend/Wall.js';
+import Game from '@/frontend/utilities/Game.js';
+import Player from '@/frontend/utilities/Player.js';
 import Chance from 'chance';
 
 const chance = new Chance();
@@ -27,7 +26,6 @@ describe('Game', () => {
   it('creates a game with all default values', () => {
     expect(game.ctx).toMatchObject(ctxMock);
     expect(game.players).toEqual([]);
-    expect(game.walls).toEqual([]);
     expect(game.interval).toBeUndefined();
   });
 
@@ -49,30 +47,6 @@ describe('Game', () => {
     });
   });
   
-  describe('addWall() and removeWall()', () => {
-    let wall;
-
-    beforeEach(() => {
-      wall = new Wall({
-        x: chance.integer({ min: 0, max: 500 }),
-        y: chance.integer({ min: 0, max: 500 }),
-        width: chance.integer({ min: 10, max: 100 }),
-        height: chance.integer({ min: 10, max: 100 })
-      });
-
-      game.addWall(wall);
-    });
-
-    it('addWall() adds the wall to the game walls', () => {
-      expect(game.walls).toContain(wall);
-    });
-
-    it('removeWall() removes the wall from the game walls', () => {
-      game.removeWall(wall);
-      expect(game.walls).not.toContain(wall);
-    });
-  });
-  
   describe('start()', () => {
     beforeEach(() => {
       jest.useFakeTimers();
@@ -85,20 +59,14 @@ describe('Game', () => {
   });
   
   describe('update()', () => {
-    let players, walls;
+    let players;
 
     beforeEach(() => {
       players = chance.n(() => new Player(), chance.integer({ min: 1, max: 10 }));
-      walls = chance.n(() => new Wall({}), chance.integer({ min: 1, max: 10 }));
 
       for (let i = 0; i < players.length; i++) {
         players[i].draw = jest.fn();
         game.addPlayer(players[i]);
-      }
-
-      for (let i = 0; i < walls.length; i++) {
-        walls[i].draw = jest.fn();
-        game.addWall(walls[i]);
       }
 
       game.update();
@@ -106,12 +74,6 @@ describe('Game', () => {
 
     it('clears the canvas', () => {
       expect(ctxMock.clearRect).toBeCalled();
-    });
-
-    it('draws all walls', () => {
-      for (let i = 0; i < walls.length; i++) {
-        expect(walls[i].draw).toBeCalled();
-      }
     });
 
     it('moves all players', () => {
