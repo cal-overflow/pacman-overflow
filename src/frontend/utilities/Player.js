@@ -1,5 +1,6 @@
 import Path from './Path.js';
 import Intersection from './Intersection.js';
+import Portal from './Portal.js';
 
 export default class Player {
   constructor() {
@@ -44,6 +45,7 @@ export default class Player {
         ...this.movement,
         ...movement
       };
+      this.nextMovement = {}; // clear next movement
     }
     else {
       this.nextMovement = movement;
@@ -70,6 +72,10 @@ export default class Player {
           const newPath = this.currentPath.traverse(this.movement);
 
           if (newPath) {
+            if (newPath instanceof Portal) {
+              return newPath.travel(this); // travel through the portal
+            }
+
             this.currentPath = newPath;
           }
           else return this.stop();
@@ -82,7 +88,6 @@ export default class Player {
       if (this.currentPath && this.currentPath instanceof Path) {
         if (this.currentPath.start.position.x === this.position.x && this.currentPath.start.position.y === this.position.y) {
           this.currentPath = this.currentPath.start;
-          
         }
         else if (this.currentPath.end.position.x === this.position.x && this.currentPath.end.position.y === this.position.y) {
           this.currentPath = this.currentPath.end;
@@ -90,6 +95,11 @@ export default class Player {
 
       }
     }
+  }
+
+  teleport(intersection) {
+    this.position = { ...intersection.position };
+    this.currentPath = intersection;
   }
 
   stop() {

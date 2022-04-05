@@ -138,6 +138,27 @@ describe('Player', () => {
     });
   });
 
+  describe('teleport()', () => {
+    let intersection;
+
+    beforeEach(() => {
+      intersection = new Intersection({
+        x: chance.integer(),
+        y: chance.integer()
+      });
+
+      player.teleport(intersection);
+    });
+
+    it('changes the player position to that of the intersection provided', () => {
+      expect(player.position).toMatchObject(intersection.position);
+    });
+
+    it('changes the player currentPath to that of the intersection provided', () => {
+      expect(player.currentPath).toMatchObject(intersection);
+    });
+  });
+
   describe('draw()', () => {
     let ctxMock;
 
