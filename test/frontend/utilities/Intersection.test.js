@@ -1,4 +1,5 @@
 import Intersection from '@/frontend/utilities/Intersection.js';
+import Portal from '@/frontend/utilities/Portal.js';
 import Chance from 'chance';
 
 const chance = new Chance();
@@ -22,43 +23,93 @@ describe('Intersection', () => {
 
   describe('addPath()', () => {
     let path;
-    describe('given a horizontal path', () => {
-      beforeEach(() => {
-        path = { isHorizontal: true };
+
+    describe('given a regular (non-portal) path', () => {
+      describe('given a horizontal path', () => {
+        beforeEach(() => {
+          path = { isHorizontal: true };
+        });
+  
+        it('it properly configures the left path', () => {
+          path.end = intersection;
+  
+          intersection.addPath(path);
+          expect(intersection.paths.left).toMatchObject(path);
+        });
+  
+        it('it properly configures the right path', () => {
+          path.start = intersection;
+  
+          intersection.addPath(path);
+          expect(intersection.paths.right).toMatchObject(path);
+        });
       });
-
-      it('it properly configures the left path', () => {
-        path.end = intersection;
-
-        intersection.addPath(path);
-        expect(intersection.paths.left).toMatchObject(path);
-      });
-
-      it('it properly configures the right path', () => {
-        path.start = intersection;
-
-        intersection.addPath(path);
-        expect(intersection.paths.right).toMatchObject(path);
+      
+      describe('given a vertical path', () => {
+        beforeEach(() => {
+          path = { isVertical: true };
+        });
+  
+        it('it properly configures the up path', () => {
+          path.end = intersection;
+  
+          intersection.addPath(path);
+          expect(intersection.paths.up).toMatchObject(path);
+        });
+  
+        it('it properly configures the down path', () => {
+          path.end = intersection;
+  
+          intersection.addPath(path);
+          expect(intersection.paths.up).toMatchObject(path);
+        });
       });
     });
-    
-    describe('given a vertical path', () => {
-      beforeEach(() => {
-        path = { isVertical: true };
+
+    describe('given a portal path', () => {
+      let start, end;
+      describe('given a horizontal path', () => {
+        beforeEach(() => {
+          start = new Intersection({ x: chance.integer({ min: 0, max: 99 }), y: 10 });
+          end = new Intersection({ x: chance.integer({ min: 100, max: 500 }), y: 10 });
+          path = new Portal(start, end);
+        });
+  
+        it('it properly configures the left path', () => {
+          path.start = intersection;
+  
+          intersection.addPath(path);
+          expect(intersection.paths.left).toMatchObject(path);
+        });
+  
+        it('it properly configures the right path', () => {
+          path.end = intersection;
+  
+          intersection.addPath(path);
+          expect(intersection.paths.right).toMatchObject(path);
+        });
       });
-
-      it('it properly configures the up path', () => {
-        path.end = intersection;
-
-        intersection.addPath(path);
-        expect(intersection.paths.up).toMatchObject(path);
-      });
-
-      it('it properly configures the down path', () => {
-        path.end = intersection;
-
-        intersection.addPath(path);
-        expect(intersection.paths.up).toMatchObject(path);
+      
+      describe('given a vertical path', () => {
+        beforeEach(() => {
+          start = new Intersection({ x: 10, y: chance.integer({ min: 0, max: 99 }) });
+          end = new Intersection({ x: 10, y: chance.integer({ min: 100, max: 500 }) });
+          path = new Portal(start, end);
+        });
+  
+        it('it properly configures the up path', () => {
+          path.start = intersection;
+  
+          intersection.addPath(path);
+          expect(intersection.paths.up).toMatchObject(path);
+        });
+  
+        it('it properly configures the down path', () => {
+          path.start = intersection;
+  
+          intersection.addPath(path);
+          expect(intersection.paths.up).toMatchObject(path);
+        });
       });
     });
   });
