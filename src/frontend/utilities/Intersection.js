@@ -1,3 +1,5 @@
+import Portal from './Portal.js';
+
 export default class Intersection {
   constructor(position) {
     this.position = position;
@@ -5,20 +7,40 @@ export default class Intersection {
   }
 
   addPath(path) {
-    if (path.isHorizontal) {
-      if (path.start === this) {
-        this.paths.right = path;
+    if (path instanceof Portal) {
+      if (path.isHorizontal) {
+        if (path.start === this) {
+          this.paths.left = path;
+        }
+        else if (path.end === this) {
+          this.paths.right = path;
+        }
       }
-      else if (path.end === this) {
-        this.paths.left = path;
+      else  {
+        if (path.start === this) {
+          this.paths.up = path;
+        }
+        else if (path.end === this) {
+          this.paths.down = path;
+        }
       }
     }
-    else  {
-      if (path.start === this) {
-        this.paths.down = path;
+    else {
+      if (path.isHorizontal) {
+        if (path.start === this) {
+          this.paths.right = path;
+        }
+        else if (path.end === this) {
+          this.paths.left = path;
+        }
       }
-      else if (path.end === this) {
-        this.paths.up = path;
+      else  {
+        if (path.start === this) {
+          this.paths.down = path;
+        }
+        else if (path.end === this) {
+          this.paths.up = path;
+        }
       }
     }
   }
@@ -43,6 +65,7 @@ export default class Intersection {
   }
 
   draw(ctx) {
+    ctx.strokeStyle = '#FFFFFF'; // TODO: revert
     ctx.beginPath();
     ctx.arc(this.position.x, this.position.y, 8, 0, 2 * Math.PI);
     ctx.stroke();

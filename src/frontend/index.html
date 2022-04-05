@@ -9,7 +9,11 @@
 </head>
 <body>
   <h1 class="text-center">Multiplayer Pacman</h1>
-  <canvas height="500" width="500" class="bg-gray-800 mx-auto">Your browser does not support HTML5.</canvas>
+  <div id="game" class="w-[992px] h-[896px] mx-auto relative">
+    <canvas id="backgroundlayer" height="992" width="896" class="absolute z-0" style="background-image: url('./assets/map.png'); background-size: cover;">Your browser does not support HTML5.</canvas>
+    <canvas id="foreground-layer" height="992" width="896" class="absolute z-10">Your browser does not support HTML5.</canvas>
+    <canvas id="player-layer" height="992" width="896" class="absolute z-20">Your browser does not support HTML5.</canvas>
+  </div>
 
   <script type="module" src="app.js"></script>
 </body>
