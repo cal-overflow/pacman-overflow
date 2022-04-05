@@ -1,4 +1,5 @@
 import Intersection from './Intersection.js';
+import { Dot, PowerPill } from './Items/index.js';
 import Path from './Path.js';
 import Portal from './Portal.js';
 
@@ -9,6 +10,7 @@ export default class Game {
     this.players = [];
     this.intersections = [];
     this.paths = [];
+    this.items = [];
     this.interval = undefined;
 
     this.board = {
@@ -30,6 +32,7 @@ export default class Game {
     }
 
     this.#generatePaths(map);
+    this.#generateItems(map);
 
     // draw intersections (dev purposes only, will change)
     for (const intersection of this.intersections) {
@@ -39,6 +42,11 @@ export default class Game {
     // draw paths (dev purposes only, will change)
     for (const path of this.paths) {
       path.draw(this.foregroundCtx);
+    }
+
+    // draw items
+    for (const item of this.items) {
+      item.draw(this.foregroundCtx);
     }
   }
 
@@ -88,6 +96,16 @@ export default class Game {
           this.paths.push(new Portal(start, end));
         }
       }
+    }
+  }
+
+  #generateItems({ items }) {
+    for (const position of items.dots) {
+      this.items.push(new Dot(position));
+    }
+
+    for (const position of items.powerPills) {
+      this.items.push(new PowerPill(position));
     }
   }
 
