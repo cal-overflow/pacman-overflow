@@ -7,7 +7,7 @@ const movementKeys = ['w', 'a', 's', 'd', 'ArrowUp', 'ArrowLeft', 'ArrowDown', '
 const game = new Game(canvas);
 const player = new Player();
 
-await game.loadGameBoard('./maps/dev.json'); // load the gameboard/map from json file
+await game.loadGameBoard('./assets/map.json'); // load the gameboard/map from json file
 
 game.addPlayer(player);
 game.start();
