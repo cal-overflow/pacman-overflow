@@ -1,10 +1,12 @@
 import Game from './utilities/Game.js';
 import Player from './utilities/Player.js';
 
-const canvas = document.querySelector('canvas');
+const foregroundCanvas = document.getElementById('foreground-layer');
+const playerCanvas = document.getElementById('player-layer');
+
 const movementKeys = ['w', 'a', 's', 'd', 'ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'];
 
-const game = new Game(canvas);
+const game = new Game(foregroundCanvas, playerCanvas);
 const player = new Player();
 
 await game.loadGameBoard('./assets/map.json'); // load the gameboard/map from json file

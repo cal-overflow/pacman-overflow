@@ -4,30 +4,42 @@ import Chance from 'chance';
 
 const chance = new Chance();
 
+
 describe('Game', () => {
-  let game, ctxMock;
+  let game, foregroundCtxMock, playerCtxMock;
 
   beforeEach(() => {
-    ctxMock = {
+    foregroundCtxMock = {
       fillStyle: '#000000',
       clearRect: jest.fn(),
       fillRect: jest.fn()
     };
 
-    const mockCanvas = {
+    playerCtxMock = {
+      fillStyle: '#000000',
+      clearRect: jest.fn(),
+      fillRect: jest.fn()
+    };
+
+    const generateMockCanvas = (ctxMock) => ({
       getContext: () => ctxMock,
       width: chance.integer({ min: 100 }),
       height: chance.integer({ min: 100 })
-    };
+    });
 
-    game = new Game(mockCanvas);
+    game = new Game(generateMockCanvas(foregroundCtxMock), generateMockCanvas(playerCtxMock));
   });
 
   it('creates a game with all default values', () => {
-    expect(game.ctx).toMatchObject(ctxMock);
+    expect(game.foregroundCtx).toMatchObject(foregroundCtxMock);
+    expect(game.playerCtx).toMatchObject(playerCtxMock);
     expect(game.players).toEqual([]);
+    expect(game.paths).toEqual([]);
+    expect(game.intersections).toEqual([]);
     expect(game.interval).toBeUndefined();
   });
+
+  describe('loadGameBoard()', () => {});
 
   describe('addPlayer() and removePlayer()', () => {
     let player;
@@ -73,7 +85,7 @@ describe('Game', () => {
     });
 
     it('clears the canvas', () => {
-      expect(ctxMock.clearRect).toBeCalled();
+      expect(playerCtxMock.clearRect).toBeCalled();
     });
 
     it('moves all players', () => {
