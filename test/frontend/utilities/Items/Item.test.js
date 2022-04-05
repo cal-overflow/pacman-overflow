@@ -1,4 +1,4 @@
-import Item from '@/frontend/utilities/Items/Item.js';
+import { Item } from '@/frontend/utilities/Items';
 import Chance from 'chance';
 
 const chance = new Chance();
