@@ -1,8 +1,9 @@
 export default class Path {
-  constructor(start, end) {
+  constructor(start, end, isLair=false) {
     this.isSafe = true;
     this.start = start;
     this.end = end;
+    this.isLair = isLair;
     this.isHorizontal = this.start.position.y === this.end.position.y;
     this.isVertical = !this.isHorizontal;
 
