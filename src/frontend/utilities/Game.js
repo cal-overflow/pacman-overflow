@@ -1,7 +1,10 @@
 import Intersection from './Intersection.js';
 import { Dot, PowerPill } from './Items/index.js';
+import { Ghost, PacMan } from './Players/index.js';
 import Path from './Path.js';
 import Portal from './Portal.js';
+
+const POWER_UP_DURATION = 7500;
 
 export default class Game {
   constructor(foregroundCanvas, playerCanvas) {
@@ -12,15 +15,14 @@ export default class Game {
     this.paths = [];
     this.items = [];
     this.interval = undefined;
+    this.powerUpInterval = undefined;
 
     this.board = {
       width: foregroundCanvas.width,
       height: foregroundCanvas.height
     };
 
-    // TODO: change this
     this.foregroundCtx.fillStyle = '#FFFFFF';
-    this.playerCtx.fillStyle = '#FFFFFF';
   }
 
   async loadGameBoard(path) {
@@ -50,7 +52,7 @@ export default class Game {
     }
   }
 
-  #generatePaths({ inaccessiblePaths, portals }) {
+  #generatePaths({ inaccessiblePaths, portals, lairPaths }) {
     for (const start of this.intersections) {
       for (const end of this.intersections) {
         if (start === end || start.position.x > end.position.x || start.position.y > end.position.y) continue;
@@ -70,7 +72,7 @@ export default class Game {
 
         const isPortal = portals.find((intersections) => {
           const startPortal = (intersections[0].x === start.position.x && intersections[0].y === start.position.y);
-          let endPortal = (intersections[1].x === end.position.x && intersections[1].y === end.position.y);
+          const endPortal = (intersections[1].x === end.position.x && intersections[1].y === end.position.y);
           return startPortal && endPortal;
         });
 
@@ -87,8 +89,14 @@ export default class Game {
             return containsStart &&  containsEnd;
           });
 
+          const isLairPath = lairPaths.find((intersections) => {
+            const startIntersection = (intersections[0].x === start.position.x && intersections[0].y === start.position.y);
+            const endIntersection = (intersections[1].x === end.position.x && intersections[1].y === end.position.y);
+            return startIntersection && endIntersection;
+          });
+
           if (!isInaccessiblePath) {
-            this.paths.push(new Path(start, end));
+            this.paths.push(new Path(start, end, isLairPath));
           }
         }
         
@@ -112,9 +120,11 @@ export default class Game {
   addPlayer(player) {
     this.players.push(player);
 
-    // Spawn the player at the first safe path
     for (const path of this.paths) {
-      if (path.isSafe) {
+      const isMatchingStart = path.start.position.x === player.spawnPath[0].x && path.start.position.y === player.spawnPath[0].y;
+      const isMatchingEnd = path.end.position.x === player.spawnPath[1].x && path.end.position.y === player.spawnPath[1].y;
+
+      if (isMatchingStart && isMatchingEnd) {
         player.spawn(path);
       }
     }
@@ -139,11 +149,90 @@ export default class Game {
   update() {
     this.playerCtx.clearRect(0, 0, this.board.width, this.board.height);
 
-    // move and draw players
+    // move each player
     for (let i = 0; i < this.players.length; i++) {
       const player = this.players[i];
       player.move();
+    }
+    
+    // handle collisions
+    const { isRedrawingItems } = this.#collisionHandler();
+    
+    // redraw items if necessary
+    if (isRedrawingItems) {
+      this.foregroundCtx.clearRect(0, 0, this.board.width, this.board.height);
+      for (const item of this.items) {
+        item.draw(this.foregroundCtx);
+      }
+    }
+
+    // draw each player
+    for (const player of this.players) {
       player.draw(this.playerCtx);
     }
+  }
+
+  #collisionHandler() {
+    // TODO: handle collisions between players and players.
+    // NOTE: be sure to handle collisions between players before collisions for items
+
+    let isRedrawingItems = false;
+
+    for (const player of this.players) {
+      for (const item of this.items) {
+        if (player.position.x === item.position.x && player.position.y === item.position.y) {
+          const itemWasUsed = item.use(player);
+
+          if (itemWasUsed) {
+            // remove this item from the game's items
+            this.items = this.items.filter(({ position }) => {
+              return !(position.x === item.position.x && position.y === item.position.y);
+            });
+
+            if (item instanceof PowerPill) {
+              this.#triggerPowerUp();
+            }
+
+            isRedrawingItems = true;
+          }
+          break;
+        }
+      }
+    }
+
+    return { isRedrawingItems };
+  }
+
+  #triggerPowerUp() {
+    for (const player of this.players) {
+      if (player instanceof PacMan) {
+        player.isPoweredUp = true;
+      }
+      
+      if (player instanceof Ghost) {
+        player.isScared = true;
+      }
+    }
+
+    // clear and reset the timeout if there is already one
+    if (this.powerUpInterval) {
+      clearTimeout(this.powerUpInterval);
+      this.powerUpInterval = undefined;
+    }
+
+    this.powerUpInterval = setTimeout(() => {
+      // update each player's status property
+      for (const player of this.players) {
+        if (player instanceof PacMan) {
+          player.isPoweredUp = false;
+        }
+        
+        if (player instanceof Ghost) {
+          player.isScared = false;
+        }
+      }
+
+      this.powerUpInterval = undefined;
+    }, POWER_UP_DURATION);
   }
 }
