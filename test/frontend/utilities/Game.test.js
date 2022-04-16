@@ -1,5 +1,5 @@
 import Game from '@/frontend/utilities/Game.js';
-import Player from '@/frontend/utilities/Player.js';
+import { Player } from '@/frontend/utilities/Players';
 import Chance from 'chance';
 
 const chance = new Chance();

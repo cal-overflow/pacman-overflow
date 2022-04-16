@@ -1,6 +1,9 @@
 # Generated files
 src/frontend/styles.css
 
+#DS_Store files
+*.DS_Store
+
 # Logs
 logs
 *.log

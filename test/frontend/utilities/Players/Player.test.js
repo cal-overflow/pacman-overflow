@@ -1,6 +1,6 @@
 import Intersection from '@/frontend/utilities/Intersection';
 import Path from '@/frontend/utilities/Path.js';
-import Player from '@/frontend/utilities/Player.js';
+import Player from '@/frontend/utilities/Players/Player.js';
 import Chance from 'chance';
 
 const chance = new Chance();
@@ -156,6 +156,21 @@ describe('Player', () => {
 
     it('changes the player currentPath to that of the intersection provided', () => {
       expect(player.currentPath).toMatchObject(intersection);
+    });
+  });
+
+  describe('incrementScore()', () => {
+    let points;
+
+    beforeEach(() => {
+      points = chance.integer({ min: 1 });
+      
+      player.score = 0;
+      player.incrementScore(points);
+    });
+
+    it('increments the player score correctly', () => {
+      expect(player.score).toEqual(points);
     });
   });
 

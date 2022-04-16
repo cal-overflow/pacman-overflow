@@ -24,6 +24,7 @@ describe('Path', () => {
       expect(path.isSafe).toBeTruthy();
       expect(path.start).toBe(start);
       expect(path.end).toBe(end);
+      expect(path.isLair).not.toBeTruthy();
     });
 
     it('adds itself to both intersections list of paths', () => {

@@ -1,4 +1,4 @@
-import Player from '@/frontend/utilities/Player.js';
+import { Player } from '@/frontend/utilities/Players';
 import Portal from '@/frontend/utilities/Portal.js';
 import Intersection from '@/frontend/utilities/Intersection.js';
 import Chance from 'chance';
