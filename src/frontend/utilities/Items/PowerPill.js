@@ -1,4 +1,5 @@
 import Item from './Item.js';
+import { PacMan } from '../Players/index.js';
 
 export default class PowerPill extends Item {
   constructor(position) {
@@ -9,8 +10,7 @@ export default class PowerPill extends Item {
     });
   }
 
-  use() {
-    // TODO
-    // power-up Pac-Man
+  use(player) {
+    return player instanceof PacMan;
   }
 }

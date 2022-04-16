@@ -1,4 +1,5 @@
 import Item from './Item.js';
+import { PacMan } from '../Players/index.js';
 
 export default class Dot extends Item {
   constructor(position) {
@@ -9,8 +10,13 @@ export default class Dot extends Item {
     });
   }
 
-  use() {
-    // TODO
-    // increment score
+  use(player) {
+    if (player instanceof PacMan) {
+      player.incrementScore(this.points);
+
+      return true;
+    }
+
+    return false;
   }
 }
