@@ -1,14 +1,16 @@
-import Path from './Path.js';
-import Intersection from './Intersection.js';
-import Portal from './Portal.js';
+import Path from '../Path.js';
+import Intersection from '../Intersection.js';
+import Portal from '../Portal.js';
 
 export default class Player {
   constructor() {
+    // Find an alternative to 'id'. This is not random enough :(
     this.id = Math.floor(Math.random() * 100);
-    this.width = 20;
-    this.height = 20;
+    this.width = 30;
+    this.height = 30;
     this.isSpawned = false;
     this.movement = { x: 0, y: 0 };
+    this.score = 0;
   }
 
   spawn(path) {
@@ -104,6 +106,10 @@ export default class Player {
 
   stop() {
     this.movement = { x: 0, y: 0 };
+  }
+
+  incrementScore(points) {
+    this.score += points;
   }
 
   draw(ctx) {
