@@ -20,7 +20,7 @@ describe('Fruit', () => {
     expect(fruit.points).not.toEqual(0);
     expect(fruit.points % 50 == 0).toBeTruthy();
     expect(fruit.lifespan).toBeUndefined();
-    expect(fruit.size).toEqual(10);
+    expect(fruit.size).toEqual(16);
   });
 
   describe('use()', () => {

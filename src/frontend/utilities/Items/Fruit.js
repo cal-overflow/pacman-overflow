@@ -5,7 +5,7 @@ export default class Fruit extends Item {
     super({
       position,
       points: Math.round((Math.random() * 250) / 50) * 50,
-      size: 10
+      size: 16
     });
   }
 
