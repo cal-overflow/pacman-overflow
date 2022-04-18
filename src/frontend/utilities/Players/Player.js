@@ -8,7 +8,7 @@ export default class Player {
     this.id = Math.floor(Math.random() * 100);
     this.width = 30;
     this.height = 30;
-    this.isSpawned = false;
+    this.position = undefined;
     this.movement = { x: 0, y: 0 };
     this.score = 0;
   }
@@ -29,14 +29,12 @@ export default class Player {
       }
 
       this.currentPath = path;
-      this.isSpawned = true;
     }
   }
 
   despawn() {
     this.stop();
 
-    this.isSpawned = false;
     this.position = undefined;
     this.currentPath = undefined;
   }
@@ -55,7 +53,7 @@ export default class Player {
   }
 
   move() {
-    if (this.isSpawned) {
+    if (this.position) {
       if (this.currentPath instanceof Intersection) {
         let movementDetermined = false;
 
