@@ -6,7 +6,7 @@ export default class Dot extends Item {
     super({
       position,
       size: 5,
-      points: 1
+      points: 5
     });
   }
 

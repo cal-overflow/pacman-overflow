@@ -18,7 +18,7 @@ describe('Dot', () => {
 
   it('creates a dot correctly', () => {
     expect(dot.position).toMatchObject(position);
-    expect(dot.points).toEqual(1);
+    expect(dot.points).toEqual(5);
     expect(dot.lifespan).toBeUndefined();
     expect(dot.size).toEqual(5);
   });
@@ -38,7 +38,7 @@ describe('Dot', () => {
       
       it('increments the player score', () => {
         dot.use(player);
-        expect(player.score).toEqual(1);
+        expect(player.score).toEqual(5);
       });
     });
 

@@ -1,5 +1,5 @@
 import Intersection from './Intersection.js';
-import { Dot, PowerPill } from './Items/index.js';
+import { Dot, Fruit, PowerPill } from './Items/index.js';
 import { Ghost, PacMan } from './Players/index.js';
 import Path from './Path.js';
 import Portal from './Portal.js';
@@ -162,17 +162,20 @@ export default class Game {
     
     // handle collisions
     const { haveItemsUpdated, havePlayersDied } = this.#collisionHandler();
-    
 
-    // respawn player(s) if necessary
     if (havePlayersDied) {
       for (const player of this.players) {
         if (!player.position) this.#spawnPlayer(player);
       }
     }
 
-    // redraw items if necessary
     if (haveItemsUpdated) {
+      if (this.items.length % 40 === 0 && Math.floor(Math.random() * 2)) {
+        if (!this.items.includes((item) => item instanceof Fruit)) {
+          this.items.push(new Fruit({ x: 448, y: 560 }));
+        }
+      }
+      
       this.foregroundCtx.clearRect(0, 0, this.board.width, this.board.height);
       for (const item of this.items) {
         item.draw(this.foregroundCtx);
@@ -183,15 +186,12 @@ export default class Game {
       }
     }
 
-    // draw each player
     for (const player of this.players) {
       if (player.position) player.draw(this.playerCtx);
     }
   }
 
   #collisionHandler() {
-    // TODO: handle collisions between players and players.
-    // NOTE: be sure to handle collisions between players before collisions for items
     const decisions = {
       havePlayersDied: false,
       haveItemsUpdated: false
