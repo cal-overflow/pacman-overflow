@@ -14,7 +14,6 @@ describe('Player', () => {
 
   it('creates a player with the correct default values', () => {
     expect(player).toMatchObject({
-      isSpawned: false,
       movement: {
         x: 0,
         y: 0
@@ -33,10 +32,6 @@ describe('Player', () => {
       player.spawn(path);
     });
 
-    it('sets the player isSpawned value to true', () => {
-      expect(player.isSpawned).toBeTruthy();
-    });
-
     it('sets the player coordinates (position) correctly', () => {
       const expectedSpawnPoint = {
         x: 0,
@@ -53,7 +48,6 @@ describe('Player', () => {
 
   describe('despawn()', () => {
     beforeEach(() => {
-      player.isSpawned = true;
       player.position = {
         x: chance.integer(),
         y: chance.integer()
@@ -62,10 +56,6 @@ describe('Player', () => {
       player.currentPath = chance.integer();
 
       player.despawn();
-    });
-
-    it('sets the player isSpawned value to false', () => {
-      expect(player.isSpawned).not.toBeTruthy();
     });
 
     it('clears the player position', () => {

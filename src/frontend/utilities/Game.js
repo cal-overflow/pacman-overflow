@@ -37,14 +37,14 @@ export default class Game {
     this.#generateItems(map);
 
     // draw intersections (dev purposes only, will change)
-    for (const intersection of this.intersections) {
-      intersection.draw(this.foregroundCtx);
-    }
+    // for (const intersection of this.intersections) {
+    //   intersection.draw(this.foregroundCtx);
+    // }
 
     // draw paths (dev purposes only, will change)
-    for (const path of this.paths) {
-      path.draw(this.foregroundCtx);
-    }
+    // for (const path of this.paths) {
+    //   path.draw(this.foregroundCtx);
+    // }
 
     // draw items
     for (const item of this.items) {
@@ -120,6 +120,10 @@ export default class Game {
   addPlayer(player) {
     this.players.push(player);
 
+    this.#spawnPlayer(player);
+  }
+
+  #spawnPlayer(player) {
     for (const path of this.paths) {
       const isMatchingStart = path.start.position.x === player.spawnPath[0].x && path.start.position.y === player.spawnPath[0].y;
       const isMatchingEnd = path.end.position.x === player.spawnPath[1].x && path.end.position.y === player.spawnPath[1].y;
@@ -135,72 +139,122 @@ export default class Game {
   }
 
   start() {
-    this.interval = setInterval(() => {
-      this.update();
-    }, 1);
+    this.interval = setInterval(() => this.update(), 1);
   }
 
   end() {
-    // TODO - this is only the basic endgame logic. Implement scoring etc.
     clearInterval(this.interval);
     this.interval = undefined;
+    
+    // dev purposes only (TODO: remove)
+    for (const player of this.players) {
+      console.log(`${player.constructor.name}: ${player.score}`);
+    }
   }
 
   update() {
     this.playerCtx.clearRect(0, 0, this.board.width, this.board.height);
-
+    
     // move each player
-    for (let i = 0; i < this.players.length; i++) {
-      const player = this.players[i];
+    for (const player of this.players) {
       player.move();
     }
     
     // handle collisions
-    const { isRedrawingItems } = this.#collisionHandler();
+    const { haveItemsUpdated, havePlayersDied } = this.#collisionHandler();
     
+
+    // respawn player(s) if necessary
+    if (havePlayersDied) {
+      for (const player of this.players) {
+        if (!player.position) this.#spawnPlayer(player);
+      }
+    }
+
     // redraw items if necessary
-    if (isRedrawingItems) {
+    if (haveItemsUpdated) {
       this.foregroundCtx.clearRect(0, 0, this.board.width, this.board.height);
       for (const item of this.items) {
         item.draw(this.foregroundCtx);
+      }
+
+      if (this.items.length === 0) {
+        this.end();
       }
     }
 
     // draw each player
     for (const player of this.players) {
-      player.draw(this.playerCtx);
+      if (player.position) player.draw(this.playerCtx);
     }
   }
 
   #collisionHandler() {
     // TODO: handle collisions between players and players.
     // NOTE: be sure to handle collisions between players before collisions for items
+    const decisions = {
+      havePlayersDied: false,
+      haveItemsUpdated: false
+    };
 
-    let isRedrawingItems = false;
+    
+    const pacman = this.players.find((player) => player instanceof PacMan);
+    const ghosts = this.players.filter((player) => player instanceof Ghost);
 
-    for (const player of this.players) {
-      for (const item of this.items) {
-        if (player.position.x === item.position.x && player.position.y === item.position.y) {
-          const itemWasUsed = item.use(player);
+    if (pacman.position) {
+      for (let i = 0; i < ghosts.length; i++) {
+        const ghost = ghosts[i];
+        if (ghost.position) {
+          let isCollision = false;
 
-          if (itemWasUsed) {
-            // remove this item from the game's items
-            this.items = this.items.filter(({ position }) => {
-              return !(position.x === item.position.x && position.y === item.position.y);
-            });
-
-            if (item instanceof PowerPill) {
-              this.#triggerPowerUp();
-            }
-
-            isRedrawingItems = true;
+          if (pacman.position.x === ghost.position.x) {
+            isCollision = Math.abs(pacman.position.y - ghost.position.y) < ((pacman.height / 2) + (ghost.height / 2));
           }
-          break;
+          else if (pacman.position.y === ghost.position.y) {
+            isCollision = Math.abs(pacman.position.x - ghost.position.x) < ((pacman.width / 2) + (ghost.width / 2));
+          }
+
+          if (isCollision) {
+            decisions.havePlayersDied = true;
+            if (pacman.isPoweredUp) {
+              pacman.incrementScore(100);
+              ghost.despawn();
+            }
+            else {
+              ghost.incrementScore(150);
+              pacman.despawn();
+              break;
+            }
+          }
         }
       }
     }
 
-    return { isRedrawingItems };
+    for (const player of this.players) {
+      if (player.position) {
+        for (const item of this.items) {
+          if (player.position.x === item.position.x && player.position.y === item.position.y) {
+            const itemWasUsed = item.use(player);
+  
+            if (itemWasUsed) {
+              // remove this item from the game's items
+              this.items = this.items.filter(({ position }) => {
+                return !(position.x === item.position.x && position.y === item.position.y);
+              });
+  
+              if (item instanceof PowerPill) {
+                this.#triggerPowerUp();
+              }
+  
+              decisions.haveItemsUpdated = true;
+            }
+            break;
+          }
+        }
+      }
+    }
+
+    return decisions;
   }
 
   #triggerPowerUp() {
