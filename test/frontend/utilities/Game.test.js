@@ -70,31 +70,6 @@ describe('Game', () => {
     });
   });
   
-  describe('update()', () => {
-    let players;
-
-    beforeEach(() => {
-      players = chance.n(() => new Player(), chance.integer({ min: 1, max: 10 }));
-
-      for (let i = 0; i < players.length; i++) {
-        players[i].draw = jest.fn();
-        game.addPlayer(players[i]);
-      }
-
-      game.update();
-    });
-
-    it('clears the canvas', () => {
-      expect(playerCtxMock.clearRect).toBeCalled();
-    });
-
-    it('moves all players', () => {
-      for (let i = 0; i < players.length; i++) {
-        expect(players[i].draw).toBeCalled();
-      }
-    });
-  });
-  
   describe('end()', () => {
 
     beforeEach(() => {
