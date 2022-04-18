@@ -1,6 +1,6 @@
 # multiplayer-pacman
 
-Multiplayer pacman game. More details coming soon.
+A Multiplayer pacman. Note: This is a **work in progress**.
 
 ### Running locally
 
@@ -17,9 +17,6 @@ $ nvm use
 
 # install dependencies
 $ npm install
-
-# build tailwind css files
-$ npm run tailwind
 
 # run in development mode (localhost:3000)
 $ npm run dev
