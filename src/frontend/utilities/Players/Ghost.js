@@ -3,6 +3,7 @@ import Player from './Player.js';
 export default class Ghost extends Player {
   constructor() {
     super();
+    this.canTraverseLair = true;
     this.isScared = false;
   }
 

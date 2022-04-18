@@ -60,7 +60,7 @@ export default class Player {
         if (this.nextMovement) {
           const newPath = this.currentPath.traverse(this.nextMovement);
 
-          if (newPath) {
+          if (newPath && (this.canTraverseLair || !newPath.isLair)) {
             this.movement = this.nextMovement;
             this.nextMovement = undefined;
             this.currentPath = newPath;
@@ -71,7 +71,7 @@ export default class Player {
         if (!movementDetermined) {
           const newPath = this.currentPath.traverse(this.movement);
 
-          if (newPath) {
+          if (newPath && (this.canTraverseLair || !newPath.isLair)) {
             if (newPath instanceof Portal) {
               return newPath.travel(this); // travel through the portal
             }
