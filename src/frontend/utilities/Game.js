@@ -170,19 +170,19 @@ export default class Game {
     }
 
     if (haveItemsUpdated) {
-      if (this.items.length % 40 === 0 && Math.floor(Math.random() * 2)) {
+      this.foregroundCtx.clearRect(0, 0, this.board.width, this.board.height);
+
+      if (this.items.filter((item) => !(item instanceof Fruit)).length === 0) {
+        this.end();
+      }
+      else if (this.items.length % 40 === 0 && Math.floor(Math.random() * 2)) {
         if (!this.items.includes((item) => item instanceof Fruit)) {
           this.items.push(new Fruit({ x: 448, y: 560 }));
         }
       }
       
-      this.foregroundCtx.clearRect(0, 0, this.board.width, this.board.height);
       for (const item of this.items) {
         item.draw(this.foregroundCtx);
-      }
-
-      if (this.items.length === 0) {
-        this.end();
       }
     }
 
