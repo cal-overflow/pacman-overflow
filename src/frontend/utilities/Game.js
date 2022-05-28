@@ -154,9 +154,11 @@ export default class Game {
 
   update() {
     this.playerCtx.clearRect(0, 0, this.board.width, this.board.height);
-    
-    // move each player
+
+    // move each player and AI behavior
     for (const player of this.players) {
+      // TODO: put if (player.isCPU) logic here
+
       player.move();
     }
     
@@ -188,6 +190,43 @@ export default class Game {
 
     for (const player of this.players) {
       if (player.position) player.draw(this.playerCtx);
+    }
+
+    // TODO: move this to the for loop at the top of the function. This is only here for debugging purposes
+    for (const player of this.players) {
+      if (player.isCPU) {
+        const targetPosition = player.getTargetPosition(this);
+        
+        // TODO: delete (debugging)
+        if (targetPosition) {
+          // console.log(targetPosition);
+          if (player instanceof PacMan) {
+            this.playerCtx.fillStyle = '#FF0000';
+          }
+          else this.playerCtx.fillStyle = '#808080';
+          this.playerCtx.beginPath();
+          this.playerCtx.arc(targetPosition.x, targetPosition.y, 8, 0, 2 * Math.PI);
+          this.playerCtx.fill();
+
+          this.playerCtx.stroke();
+        }
+
+        const paths = this.#findPath(targetPosition);
+
+        // DEBUGGING - TODO: delete this
+        if (paths) {
+          console.log(paths);
+          for (const path in paths) {
+            this.foregroundCtx.fillStyle = '#ff0000';
+            path.draw(this.foregroundCtx);
+          }
+        }
+        else console.log('no path returned');
+        // end of debugging
+
+        // TODO
+        // using the paths (list of path objects), set this player movement accordingly
+      }
     }
   }
 
@@ -288,5 +327,10 @@ export default class Game {
 
       this.powerUpInterval = undefined;
     }, POWER_UP_DURATION);
+  }
+
+  #findPath(targetPosition) {
+    if (!targetPosition) return;
+    // TODO
   }
 }

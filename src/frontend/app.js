@@ -8,6 +8,7 @@ const movementKeys = ['w', 'a', 's', 'd', 'ArrowUp', 'ArrowLeft', 'ArrowDown', '
 
 const game = new Game(foregroundCanvas, playerCanvas);
 const player = new PacMan();
+// player.isCPU = false; // TODO: uncomment
 const blinky = new Blinky();
 const clyde = new Clyde();
 const inky = new Inky();
