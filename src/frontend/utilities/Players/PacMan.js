@@ -1,6 +1,9 @@
 import Intersection from '../Intersection.js';
 import Player from './Player.js';
 
+const CHANCE_ATTACK_LAIR_WHEN_POWERED_UP = 0.2;
+const CHANCE_IGNORE_GHOST_WHEN_POWERED_UP = 0.5;
+
 export default class PacMan extends Player {
   constructor() {
     super();
@@ -22,9 +25,9 @@ export default class PacMan extends Player {
   getTargetPosition(game) {
     if (!this.isCPU) return;
     
-    if (this.isPoweredUp) {
-      let closestGhost;
+    let closestGhost, closestItem;
 
+    if (this.isPoweredUp) {
       for (const ghost of game.players) {
         if (ghost === this) continue;
 
@@ -36,7 +39,7 @@ export default class PacMan extends Player {
         }
         else isGhostInLair = ghostPath.isLair;
 
-        if (!isGhostInLair) {
+        if (!isGhostInLair || Math.random() < CHANCE_ATTACK_LAIR_WHEN_POWERED_UP) {
           ghost.distance = Math.abs(this.position.x - ghost.position.x) + Math.abs(this.position.y - ghost.position.y);
   
           if ((!closestGhost || ghost.distance < closestGhost.distance) && !isGhostInLair) {
@@ -45,11 +48,9 @@ export default class PacMan extends Player {
         }
       }
 
-      if (closestGhost)
+      if (closestGhost && Math.random() < CHANCE_IGNORE_GHOST_WHEN_POWERED_UP)
         return closestGhost.position;
     }
-
-    let closestItem;
 
     for (const item of game.items) {
       item.distance = Math.abs(this.position.x - item.position.x) + Math.abs(this.position.y - item.position.y);

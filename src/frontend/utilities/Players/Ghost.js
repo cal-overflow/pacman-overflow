@@ -1,6 +1,7 @@
 import Player from './Player.js';
 import PacMan from './PacMan.js';
 
+const CHANCE_RUN_FROM_POWERED_PACMAN = 0.9;
 
 export default class Ghost extends Player {
   constructor() {
@@ -22,7 +23,7 @@ export default class Ghost extends Player {
   getTargetPosition(game) {
     if (!this.isCPU) return;
 
-    if (this.isScared) {
+    if (this.isScared && Math.random() < CHANCE_RUN_FROM_POWERED_PACMAN) {
       const lairPaths = game.paths.filter((path) => path.isLair);
       const chosenPath = lairPaths[Math.floor(Math.random() * lairPaths.length)];
       
