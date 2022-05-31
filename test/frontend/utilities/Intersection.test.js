@@ -1,4 +1,5 @@
 import Intersection from '@/frontend/utilities/Intersection.js';
+import Path from '@/frontend/utilities/Path';
 import Portal from '@/frontend/utilities/Portal.js';
 import Chance from 'chance';
 
@@ -17,6 +18,7 @@ describe('Intersection', () => {
   });
 
   it('creates an intersection object correctly', () => {
+    expect(intersection.key).toEqual(JSON.stringify(position));
     expect(intersection.position).toMatchObject(position);
     expect(intersection.paths).toMatchObject({});
   });
@@ -161,17 +163,95 @@ describe('Intersection', () => {
     });
   });
 
-  describe('draw()', () => {
-    describe('given the intersection joins two paths', () => {
-      it.todo('correctly draws the intersection');
+  describe('getNeighbors()', () => {
+
+    it('returns an empty array given there are no neighboring intersections', () => {
+      expect(intersection.getNeighbors()).toHaveLength(0);
     });
 
-    describe('given the intersection joins three paths', () => {
-      it.todo('correctly draws the intersection');
+    describe('given neighbors', () => {
+      const neighbors = {};
+      const paths = {};
+
+      beforeEach(() => {
+        neighbors.below = new Intersection({
+          x: intersection.position.x,
+          y: chance.integer({ min: intersection.position.y + 1 })
+        });
+        neighbors.left = new Intersection({
+          x: chance.integer({ max: intersection.position.x - 1 }),
+          y: intersection.position.y
+        });
+
+        paths.down = new Path(intersection, neighbors.below);
+        paths.left = new Path(neighbors.left, intersection);
+      });
+
+      it('returns each of the neighbors correctly', () => {
+        const result = intersection.getNeighbors();
+        expect(result).toHaveLength(2);
+        expect(result).toContainEqual(neighbors.below);
+        expect(result).toContainEqual(neighbors.left);
+      });
     });
 
-    describe('given the intersection joins four paths', () => {
-      it.todo('correctly draws the intersection');
+    describe('given a neighbor connected via portal', () => {
+      const neighbors = {};
+      const paths = {};
+
+      beforeEach(() => {
+        neighbors.above = new Intersection({
+          x: intersection.position.x,
+          y: chance.integer({ max: intersection.position.y - 1 })
+        });
+        neighbors.right = new Intersection({
+          x: chance.integer({ max: intersection.position.x + 1 }),
+          y: intersection.position.y
+        });
+
+        paths.up = new Portal(neighbors.above, intersection);
+        paths.right = new Portal(intersection, neighbors.right);
+      });
+
+      it('returns each of the neighbors correctly', () => {
+        const result = intersection.getNeighbors();
+        expect(result).toHaveLength(2);
+        expect(result).toContainEqual(neighbors.above);
+        expect(result).toContainEqual(neighbors.right);
+      });
+    });
+  });
+
+  describe('getPathToNeighbor()', () => {
+    it('returns falsey given no neighbor is passed in', () => {
+      expect(intersection.getPathToNeighbor()).not.toBeTruthy();
+    });
+
+    describe('given a neighbor is passed in', () => {
+      const neighbors = {};
+      const paths = {};
+
+      beforeEach(() => {
+        neighbors.below = new Intersection({
+          x: intersection.position.x,
+          y: chance.integer({ min: intersection.position.y + 1 })
+        });
+        neighbors.right = new Intersection({
+          x: chance.integer({ min: intersection.position.x + 1 }),
+          y: intersection.position.y
+        });
+
+        paths.down = new Path(intersection, neighbors.below);
+        paths.left = new Portal(neighbors.right, intersection);
+      });
+
+      it('returns the path connecting the two intersections correctly', () => {
+        expect(intersection.getPathToNeighbor(neighbors.below)).toMatchObject(paths.down);
+      });
+
+      it('returns the portal connecting the two intersections correctly', () => {
+        expect(intersection.getPathToNeighbor(neighbors.right)).toMatchObject(paths.left);
+      });
     });
   });
 });

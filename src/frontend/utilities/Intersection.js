@@ -1,7 +1,21 @@
 import Portal from './Portal.js';
 
+const directionsBetweenIntersections = {
+  up: 'start',
+  down: 'end',
+  left: 'start',
+  right: 'end',
+  portal: {
+    up: 'end',
+    down: 'start',
+    left: 'end',
+    right: 'start'
+  }
+};
+
 export default class Intersection {
   constructor(position) {
+    this.key = JSON.stringify(position);
     this.position = position;
     this.paths = {};
   }
@@ -64,10 +78,37 @@ export default class Intersection {
     }
   }
 
-  draw(ctx) {
-    ctx.strokeStyle = '#FFFFFF'; // TODO: revert
-    ctx.beginPath();
-    ctx.arc(this.position.x, this.position.y, 8, 0, 2 * Math.PI);
-    ctx.stroke();
+  getNeighbors() {
+    const neighbors = [];
+
+    for (const direction in directionsBetweenIntersections) {
+      if (this.paths[direction]) {
+        if (this.paths[direction] instanceof Portal) {
+          neighbors.push(this.paths[direction][directionsBetweenIntersections.portal[direction]]);
+        }
+        else {
+          neighbors.push(this.paths[direction][directionsBetweenIntersections[direction]]);
+        }
+      }
+    }
+
+    return neighbors;
+  }
+  
+  getPathToNeighbor(neighbor) {
+    if (!neighbor) return;
+
+    for (const direction in directionsBetweenIntersections) {
+      if (this.paths[direction]) {
+        if (this.paths[direction] instanceof Portal) {
+          if (this.paths[direction][directionsBetweenIntersections.portal[direction]].key === neighbor.key) {
+            return this.paths[direction];
+          }
+        }
+        else if (this.paths[direction][directionsBetweenIntersections[direction]].key === neighbor.key) {
+          return this.paths[direction];
+        }
+      }
+    }
   }
 }
