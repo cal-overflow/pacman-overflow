@@ -11,6 +11,8 @@ export default class Player {
     this.position = undefined;
     this.movement = { x: 0, y: 0 };
     this.score = 0;
+    this.isCPU = true;
+    this.pathToTarget = [];
   }
 
   spawn(path) {
@@ -114,4 +116,6 @@ export default class Player {
     ctx.fillStyle = '#FFFFFF';
     ctx.fillRect(this.position.x - (this.width / 2), this.position.y - (this.height / 2), this.width, this.height);
   }
+
+  getTargetPosition() { return; }
 }

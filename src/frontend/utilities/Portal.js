@@ -3,6 +3,7 @@ import Path from './Path.js';
 export default class Portal extends Path {
   constructor(start, end) {
     super(start, end);
+    this.weight = 1;
   }
 
   travel(player) {
@@ -23,4 +24,6 @@ export default class Portal extends Path {
       }
     }
   }
+
+  containsPosition() { return false; }
 }

@@ -25,6 +25,7 @@ describe('Portal', () => {
     expect(portal.isSafe).toBeTruthy();
     expect(portal.start).toBe(start);
     expect(portal.end).toBe(end);
+    expect(portal.weight).toEqual(1);
   });
 
   it('adds itself to both intersections list of paths', () => {
@@ -48,6 +49,12 @@ describe('Portal', () => {
 
     it('teleports the player', () => {
       expect(player.teleport).toBeCalled();
+    });
+  });
+
+  describe('containsPosition()', () => {
+    it('returns false', () => {
+      expect(portal.containsPosition()).toEqual(false);
     });
   });
 });
