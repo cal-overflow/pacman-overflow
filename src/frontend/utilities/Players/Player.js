@@ -12,6 +12,7 @@ export default class Player {
     this.movement = { x: 0, y: 0 };
     this.score = 0;
     this.isCPU = true;
+    this.pathToTarget = [];
   }
 
   spawn(path) {

@@ -44,6 +44,14 @@ describe('Player', () => {
     it('sets the currentPath value correctly', () => {
       expect(player.currentPath).toEqual(path);
     });
+
+    it('sets the isCPU property to true by default', () => {
+      expect(player.isCPU).toBeTruthy();
+    });
+
+    it('sets the pathToTarget value correctly', () => {
+      expect(player.pathToTarget).toHaveLength(0);
+    });
   });
 
   describe('despawn()', () => {
