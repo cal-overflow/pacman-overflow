@@ -3,10 +3,20 @@ import Ghost from './Ghost.js';
 export default class Clyde extends Ghost {
   constructor() {
     super();
-    this.spawnPath = [
-      { x: 484, y: 464 },
-      { x: 520, y: 464 }
-    ];
+  }
+
+  spawn(game) {
+    super.spawn(game, 'clyde');
+  }
+
+  getTargetPosition(game) {
+    if (!this.isCPU) return;
+
+    if (this.isScatterMode) {
+      return; // TODO: return an intersection in the corner that this ghost likes going to
+    }
+
+    return super.getPacManPosition(game);
   }
 
   draw(ctx) {

@@ -1,4 +1,5 @@
 import Intersection from '../Intersection.js';
+import Portal from '../Portal.js';
 import Player from './Player.js';
 
 const CHANCE_ATTACK_LAIR_WHEN_POWERED_UP = 0.2;
@@ -8,11 +9,39 @@ export default class PacMan extends Player {
   constructor() {
     super();
     this.isPoweredUp = false;
+  }
 
-    this.spawnPath = [
-      { x: 304, y: 560 },
-      { x: 592, y: 560 },
-    ];
+  spawn({ paths, players, items, map }) {
+    let spawnPath;
+
+    // Assume this is initial spawn if score is 0
+    if (!this.score) {
+      spawnPath = map.playerSpawnPaths.pacman;
+    }
+    else { 
+      const validPaths = paths.filter((path) => {
+        if (path.isLair || path instanceof Portal) {
+          return false;
+        }
+        const containsGhost = players.some(({ position }) => path.containsPosition(position));
+        const containsPills = items.some(({ position }) => path.containsPosition(position));
+
+        return !containsGhost && !containsPills;
+      });
+
+      const pathIndex = Math.floor(Math.random() * validPaths.length);
+      spawnPath = [validPaths[pathIndex].start.position, validPaths[pathIndex].end.position];
+    }
+
+    for (const path of paths) {
+      const isMatchingStart = path.start.position.x === spawnPath[0].x && path.start.position.y === spawnPath[0].y;
+      const isMatchingEnd = path.end.position.x === spawnPath[1].x && path.end.position.y === spawnPath[1].y;
+
+      if (isMatchingStart && isMatchingEnd) {
+        super.spawn(path);
+        return;
+      }
+    }
   }
 
   // TODO: override draw method

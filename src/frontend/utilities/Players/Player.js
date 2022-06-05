@@ -16,22 +16,22 @@ export default class Player {
   }
 
   spawn(path) {
-    if (path instanceof Path) {
-      if (path.isHorizontal) {
-        this.position = {
-          x: (path.end.position.x + path.start.position.x) / 2,
-          y: path.start.position.y
-        };
-      }
-      else {
-        this.position = {
-          x: path.start.position.x,
-          y: (path.start.position.y + path.end.position.y) / 2
-        };
-      }
+    if (!path || !(path instanceof Path)) return;
 
-      this.currentPath = path;
+    if (path.isHorizontal) {
+      this.position = {
+        x: (path.end.position.x + path.start.position.x) / 2,
+        y: path.start.position.y
+      };
     }
+    else {
+      this.position = {
+        x: path.start.position.x,
+        y: (path.start.position.y + path.end.position.y) / 2
+      };
+    }
+
+    this.currentPath = path;
   }
 
   despawn() {

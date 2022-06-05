@@ -1,47 +1,63 @@
 import Game from '@/frontend/utilities/Game.js';
+import { Item } from '@/frontend/utilities/Items';
 import { Player } from '@/frontend/utilities/Players';
 import Chance from 'chance';
 
+const map = require('@/frontend/assets/map.json');
 const chance = new Chance();
 
+const generateMockCanvas = (ctxMock) => ({
+  getContext: () => ctxMock,
+  width: chance.integer({ min: 100 }),
+  height: chance.integer({ min: 100 })
+});
 
 describe('Game', () => {
-  let game, foregroundCtxMock, playerCtxMock;
+  const totalItems = map.items.dots.length + map.items.powerPills.length;
+  let game, foregroundCtxMock, playerCtxMock, itemDrawMock;
 
   beforeEach(() => {
+    itemDrawMock = jest.spyOn(Item.prototype, 'draw');
+
     foregroundCtxMock = {
       fillStyle: '#000000',
       clearRect: jest.fn(),
-      fillRect: jest.fn()
+      fillRect: jest.fn(),
+      beginPath: jest.fn(),
+      arc: jest.fn(),
+      fill: jest.fn(),
+      stroke: jest.fn()
     };
 
     playerCtxMock = {
       fillStyle: '#000000',
       clearRect: jest.fn(),
-      fillRect: jest.fn()
+      fillRect: jest.fn(),
+      beginPath: jest.fn(),
+      arc: jest.fn(),
+      fill: jest.fn(),
+      stroke: jest.fn()
     };
 
-    const generateMockCanvas = (ctxMock) => ({
-      getContext: () => ctxMock,
-      width: chance.integer({ min: 100 }),
-      height: chance.integer({ min: 100 })
-    });
-
-    game = new Game(generateMockCanvas(foregroundCtxMock), generateMockCanvas(playerCtxMock));
+    game = new Game({ foregroundCanvas: generateMockCanvas(foregroundCtxMock), playerCanvas: generateMockCanvas(playerCtxMock), map });
   });
+  afterEach(jest.clearAllMocks);
 
-  it('creates a game with all default values', () => {
+  it('creates a game object correctly values', () => {
     expect(game.foregroundCtx).toMatchObject(foregroundCtxMock);
     expect(game.playerCtx).toMatchObject(playerCtxMock);
     expect(game.players).toEqual([]);
-    expect(game.paths).toEqual([]);
-    expect(game.intersections).toEqual([]);
+    expect(game.items).toHaveLength(totalItems);
+    expect(game.intersections).toHaveLength(map.intersections.length);
+    expect(game.map).toMatchObject(map);
     expect(game.interval).toBeUndefined();
   });
 
-  describe('loadGameBoard()', () => {});
+  it('should draw each of the items', () => {
+    expect(itemDrawMock).toHaveBeenCalledTimes(totalItems);
+  });
 
-  describe('addPlayer() and removePlayer()', () => {
+  describe('addPlayer()', () => {
     let player;
 
     beforeEach(() => {
@@ -67,6 +83,18 @@ describe('Game', () => {
 
     it('sets the game interval', () => {
       expect(game.interval).not.toBeUndefined();
+    });
+  });
+
+  describe('update()', () => {
+    it.todo('moves the players');
+
+    describe('given a player dies', () => {
+      it.todo('respawns the player');
+    });
+
+    describe('given a player dies', () => {
+      it.todo('respawns the player');
     });
   });
   

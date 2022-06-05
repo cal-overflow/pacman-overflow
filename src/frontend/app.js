@@ -6,15 +6,16 @@ const playerCanvas = document.getElementById('player-layer');
 
 const movementKeys = ['w', 'a', 's', 'd', 'ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'];
 
-const game = new Game(foregroundCanvas, playerCanvas);
+const res = await fetch('./assets/map.json');
+const map = await res.json();
+const game = new Game({ foregroundCanvas, playerCanvas, map });
+
 const player = new PacMan();
-player.isCPU = false; // TODO: uncomment
+player.isCPU = false; // TODO: Change where this happens
 const blinky = new Blinky();
 const clyde = new Clyde();
 const inky = new Inky();
 const pinky = new Pinky();
-
-await game.loadGameBoard('./assets/map.json'); // load the gameboard/map from json file
 
 game.addPlayer(player);
 game.addPlayer(blinky);
