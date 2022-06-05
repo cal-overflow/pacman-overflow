@@ -69,7 +69,7 @@ describe('Path', () => {
           expect(path.containsPosition(mockPosition)).not.toBeTruthy();
         });
   
-        it('returns truthy given the position is not on the path', () => {
+        it('returns truthy given the position is on the path', () => {
           mockPosition = {
             x: chance.integer({ min: start.position.x, max: end.position.x }),
             y: 10
