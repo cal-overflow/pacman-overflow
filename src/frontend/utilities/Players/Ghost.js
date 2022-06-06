@@ -2,8 +2,9 @@ import Player from './Player.js';
 import PacMan from './PacMan.js';
 
 const CHANCE_RUN_FROM_POWERED_PACMAN = 0.9;
-const MAX_SECONDS_PER_TRAVEL_MODE = 20;
-const MIN_SECONDS_PER_TRAVEL_MODE = 5;
+const MAX_SECONDS_CHASE_MODE = 20;
+const MAX_SECONDS_SCATTER_MODE = 9;
+const MIN_SECONDS_PER_TRAVEL_MODE = 3;
 
 export default class Ghost extends Player {
   constructor() {
@@ -29,10 +30,13 @@ export default class Ghost extends Player {
   }
 
   toggleTravelMode() {
+    const maxDurationCurrentMode = this.isScatterMode ? MAX_SECONDS_SCATTER_MODE : MAX_SECONDS_CHASE_MODE;
+    const timeUntilTravelChange = Math.round((Math.random() * (maxDurationCurrentMode - MIN_SECONDS_PER_TRAVEL_MODE + 1)) + MIN_SECONDS_PER_TRAVEL_MODE) * 1000;
+
     this.travelModeToggleTimeoutId = setTimeout(() => {
       this.isScatterMode = !this.isScatterMode;
       this.travelModeToggleTimeoutId = undefined;
-    }, Math.round((Math.random() * (MAX_SECONDS_PER_TRAVEL_MODE - MIN_SECONDS_PER_TRAVEL_MODE + 1)) + MIN_SECONDS_PER_TRAVEL_MODE) * 1000);
+    }, timeUntilTravelChange);
   }
 
   getTargetPosition(game) {
