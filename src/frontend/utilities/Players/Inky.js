@@ -3,10 +3,7 @@ import Ghost from './Ghost.js';
 export default class Inky extends Ghost {
   constructor() {
     super();
-    this.spawnPath = [
-      { x: 412, y: 464 },
-      { x: 448, y: 464 }
-    ];
+    this.key = 'inky';
   }
 
   draw(ctx) {

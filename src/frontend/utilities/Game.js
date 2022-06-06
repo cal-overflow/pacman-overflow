@@ -7,7 +7,7 @@ import Portal from './Portal.js';
 const POWER_UP_DURATION = 7500;
 
 export default class Game {
-  constructor(foregroundCanvas, playerCanvas) {
+  constructor({ foregroundCanvas, playerCanvas, map }) {
     this.foregroundCtx = foregroundCanvas.getContext('2d');
     this.playerCtx = playerCanvas.getContext('2d');
     this.players = [];
@@ -16,6 +16,7 @@ export default class Game {
     this.items = [];
     this.interval = undefined;
     this.powerUpInterval = undefined;
+    this.map = map;
 
     this.board = {
       width: foregroundCanvas.width,
@@ -23,12 +24,11 @@ export default class Game {
     };
 
     this.foregroundCtx.fillStyle = '#FFFFFF';
+
+    this.#loadGameBoard(map);
   }
 
-  async loadGameBoard(path) {
-    const res = await fetch(path);
-    const map = await res.json();
-
+  #loadGameBoard(map) {
     for (const configuration of map.intersections) {
       this.intersections.push(new Intersection(configuration));
     }
@@ -37,9 +37,7 @@ export default class Game {
     this.#generateItems(map);
 
     // draw items
-    for (const item of this.items) {
-      item.draw(this.foregroundCtx);
-    }
+    this.#drawItems();
   }
 
   #generatePaths({ inaccessiblePaths, portals, lairPaths }) {
@@ -107,21 +105,22 @@ export default class Game {
     }
   }
 
+  #drawItems() {
+    for (const item of this.items) {
+      item.draw(this.foregroundCtx);
+    }
+  }
+
+  #drawPlayers() {
+    for (const player of this.players) {
+      if (player.position) player.draw(this.playerCtx);
+    }
+  }
+
   addPlayer(player) {
     this.players.push(player);
 
-    this.#spawnPlayer(player);
-  }
-
-  #spawnPlayer(player) {
-    for (const path of this.paths) {
-      const isMatchingStart = path.start.position.x === player.spawnPath[0].x && path.start.position.y === player.spawnPath[0].y;
-      const isMatchingEnd = path.end.position.x === player.spawnPath[1].x && path.end.position.y === player.spawnPath[1].y;
-
-      if (isMatchingStart && isMatchingEnd) {
-        player.spawn(path);
-      }
-    }
+    player.spawn(this);
   }
 
   removePlayer(playerToRemove) {
@@ -157,7 +156,7 @@ export default class Game {
 
     if (havePlayersDied) {
       for (const player of this.players) {
-        if (!player.position) this.#spawnPlayer(player);
+        if (!player.position) player.spawn(this);
       }
     }
 
@@ -173,14 +172,10 @@ export default class Game {
         }
       }
 
-      for (const item of this.items) {
-        item.draw(this.foregroundCtx);
-      }
+      this.#drawItems();
     }
 
-    for (const player of this.players) {
-      if (player.position) player.draw(this.playerCtx);
-    }
+    this.#drawPlayers();
   }
 
   #collisionHandler() {
@@ -284,6 +279,10 @@ export default class Game {
 
   #setCPUMovement(player) {
     if (!player.isCPU) return;
+
+    if (player instanceof Ghost && !player.travelModeToggleTimeoutId) {
+      player.toggleTravelMode();
+    }
 
     if (player.currentPath instanceof Intersection || (!player.movement?.x && !player.movement?.y)) {
       if (!player.pathToTarget.length || Math.random() < 0.25) {

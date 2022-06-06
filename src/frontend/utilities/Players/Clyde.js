@@ -3,10 +3,7 @@ import Ghost from './Ghost.js';
 export default class Clyde extends Ghost {
   constructor() {
     super();
-    this.spawnPath = [
-      { x: 484, y: 464 },
-      { x: 520, y: 464 }
-    ];
+    this.key = 'clyde';
   }
 
   draw(ctx) {

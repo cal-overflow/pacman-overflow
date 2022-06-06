@@ -3,10 +3,8 @@ import Ghost from './Ghost.js';
 export default class Blinky extends Ghost {
   constructor() {
     super();
-    this.spawnPath = [
-      { x: 376, y: 464 },
-      { x: 412, y: 464 }
-    ];
+    this.key = 'blinky';
+    this.isScatterMode = false; // Blinky will chase after pacman immediately
   }
 
   draw(ctx) {
