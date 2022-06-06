@@ -14,8 +14,8 @@ export default class Ghost extends Player {
     this.travelModeToggleTimeoutId = undefined;
   }
 
-  spawn({ paths, map }, ghostKey) {
-    const spawnPath = map.playerSpawnPaths[ghostKey];
+  spawn({ paths, map }) {
+    const spawnPath = map.playerSpawnPaths[this.key];
     
     for (const path of paths) {
       const isMatchingStart = path.start.position.x === spawnPath[0].x && path.start.position.y === spawnPath[0].y;
@@ -35,8 +35,20 @@ export default class Ghost extends Player {
     }, Math.round((Math.random() * (MAX_SECONDS_PER_TRAVEL_MODE - MIN_SECONDS_PER_TRAVEL_MODE + 1)) + MIN_SECONDS_PER_TRAVEL_MODE) * 1000);
   }
 
-  // TODO: consider changing this so that the ghosts have their own "chase" behavior
-  getPacManPosition(game) {
+  getTargetPosition(game) {
+    if (this.isScatterMode) {
+      const scatterPath = game.map.ghostScatterPaths[this.key];
+
+      for (let i = 0; i + 1 < scatterPath.length; i++) {
+        const point = scatterPath[i];
+        if (this.position.x === point.x && this.position.y === point.y) {
+          return scatterPath[i + 1];
+        }
+      }
+
+      return scatterPath[0];
+    }
+
     if (this.isScared && Math.random() < CHANCE_RUN_FROM_POWERED_PACMAN) {
       const lairPaths = game.paths.filter((path) => path.isLair);
       const chosenPath = lairPaths[Math.floor(Math.random() * lairPaths.length)];
