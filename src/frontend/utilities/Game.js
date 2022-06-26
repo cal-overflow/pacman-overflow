@@ -1,20 +1,24 @@
 import Intersection from './Intersection.js';
 import { Dot, Fruit, PowerPill } from './Items/index.js';
 import { Ghost, PacMan } from './Players/index.js';
+import Text from './Text.js';
 import Path from './Path.js';
 import Portal from './Portal.js';
 
 const POWER_UP_DURATION = 7500;
+const POINT_TEXT_VISIBILITY_DURATION = 1200;
 
 export default class Game {
-  constructor({ foregroundCanvas, animationCanvas, playerCanvas, map }) {
+  constructor({ foregroundCanvas, animationCanvas, textCanvas, playerCanvas, map }) {
     this.foregroundCtx = foregroundCanvas.getContext('2d');
+    this.textCtx = textCanvas.getContext('2d');
     this.animationCtx = animationCanvas.getContext('2d');
     this.playerCtx = playerCanvas.getContext('2d');
     this.players = [];
     this.intersections = [];
     this.paths = [];
     this.items = [];
+    this.textElements = [];
     this.interval = undefined;
     this.powerUpInterval = undefined;
     this.map = map;
@@ -121,6 +125,27 @@ export default class Game {
     }
   }
 
+  #createTextElement(value, position, color) {
+    const textElement = new Text({
+      position, 
+      value: `${value}`,
+      color
+    });
+    this.textElements.push(textElement);
+
+    setTimeout(() => {
+      const index = this.textElements.indexOf(textElement);
+      this.textElements.splice(index, 1);
+    }, POINT_TEXT_VISIBILITY_DURATION);
+  }
+  
+  #drawText() {
+    this.textCtx.clearRect(0, 0, this.board.width, this.board.height);
+    for (const text of this.textElements) {
+      text.draw(this.textCtx);
+    }
+  }
+
   #drawFlashingItems(forceDraw) {
     this.flashingAnimation.curPosition++;
 
@@ -201,6 +226,7 @@ export default class Game {
       this.#drawItems();
     }
 
+    this.#drawText();
     this.#drawFlashingItems(haveItemsUpdated);
     this.#drawPlayers();
   }
@@ -231,10 +257,12 @@ export default class Game {
           if (isCollision) {
             decisions.havePlayersDied = true;
             if (pacman.isPoweredUp) {
+              this.#createTextElement(100, ghost.position, ghost.color);
               pacman.incrementScore(100);
               ghost.despawn();
             }
             else {
+              this.#createTextElement(150, pacman.position, pacman.color);
               ghost.incrementScore(150);
               pacman.despawn();
               break;

@@ -14,7 +14,7 @@ const generateMockCanvas = (ctxMock) => ({
 
 describe('Game', () => {
   const totalItems = map.items.dots.length + map.items.powerPills.length;
-  let game, foregroundCtxMock, animationCtxMock, playerCtxMock, itemDrawMock;
+  let game, foregroundCtxMock, animationCtxMock, textCtxMock, playerCtxMock, itemDrawMock;
 
   beforeEach(() => {
     itemDrawMock = jest.spyOn(Item.prototype, 'draw');
@@ -49,10 +49,21 @@ describe('Game', () => {
       stroke: jest.fn()
     };
 
+    textCtxMock = {
+      fillStyle: '#000000',
+      clearRect: jest.fn(),
+      fillRect: jest.fn(),
+      beginPath: jest.fn(),
+      arc: jest.fn(),
+      fill: jest.fn(),
+      stroke: jest.fn()
+    };
+
     game = new Game({
       foregroundCanvas: generateMockCanvas(foregroundCtxMock),
       playerCanvas: generateMockCanvas(playerCtxMock),
       animationCanvas: generateMockCanvas(animationCtxMock),
+      textCanvas: generateMockCanvas(textCtxMock),
       map
     });
   });
@@ -62,6 +73,7 @@ describe('Game', () => {
     expect(game.foregroundCtx).toMatchObject(foregroundCtxMock);
     expect(game.animationCtx).toMatchObject(animationCtxMock);
     expect(game.playerCtx).toMatchObject(playerCtxMock);
+    expect(game.textCtx).toMatchObject(textCtxMock);
     expect(game.players).toEqual([]);
     expect(game.items).toHaveLength(totalItems);
     expect(game.intersections).toHaveLength(map.intersections.length);
