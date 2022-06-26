@@ -1,22 +1,32 @@
 import Intersection from './Intersection.js';
 import { Dot, Fruit, PowerPill } from './Items/index.js';
 import { Ghost, PacMan } from './Players/index.js';
+import Text from './Text.js';
 import Path from './Path.js';
 import Portal from './Portal.js';
 
 const POWER_UP_DURATION = 7500;
+const POINT_TEXT_VISIBILITY_DURATION = 1200;
 
 export default class Game {
-  constructor({ foregroundCanvas, playerCanvas, map }) {
+  constructor({ foregroundCanvas, animationCanvas, textCanvas, playerCanvas, map }) {
     this.foregroundCtx = foregroundCanvas.getContext('2d');
+    this.textCtx = textCanvas.getContext('2d');
+    this.animationCtx = animationCanvas.getContext('2d');
     this.playerCtx = playerCanvas.getContext('2d');
     this.players = [];
     this.intersections = [];
     this.paths = [];
     this.items = [];
+    this.textElements = [];
     this.interval = undefined;
     this.powerUpInterval = undefined;
     this.map = map;
+    this.flashingAnimation = {
+      duration: 34,
+      isCurrentlyVisible: true,
+      curPosition: 0,
+    };
 
     this.board = {
       width: foregroundCanvas.width,
@@ -38,6 +48,7 @@ export default class Game {
 
     // draw items
     this.#drawItems();
+    this.#drawFlashingItems();
   }
 
   #generatePaths({ inaccessiblePaths, portals, lairPaths }) {
@@ -106,8 +117,50 @@ export default class Game {
   }
 
   #drawItems() {
-    for (const item of this.items) {
+    this.foregroundCtx.clearRect(0, 0, this.board.width, this.board.height);
+    const nonFlashingItems = this.items.filter((item) => !item.isFlashing);
+
+    for (const item of nonFlashingItems) {
       item.draw(this.foregroundCtx);
+    }
+  }
+
+  #createTextElement(value, position, color) {
+    const textElement = new Text({
+      position, 
+      value: `${value}`,
+      color
+    });
+    this.textElements.push(textElement);
+
+    setTimeout(() => {
+      const index = this.textElements.indexOf(textElement);
+      this.textElements.splice(index, 1);
+    }, POINT_TEXT_VISIBILITY_DURATION);
+  }
+  
+  #drawText() {
+    this.textCtx.clearRect(0, 0, this.board.width, this.board.height);
+    for (const text of this.textElements) {
+      text.draw(this.textCtx);
+    }
+  }
+
+  #drawFlashingItems(forceDraw) {
+    this.flashingAnimation.curPosition++;
+
+    if (this.flashingAnimation.curPosition >= this.flashingAnimation.duration) {
+      this.animationCtx.clearRect(0, 0, this.board.width, this.board.height);
+      const flashingItems = this.items.filter((item) => item.isFlashing);
+      
+      if (this.flashingAnimation.isCurrentlyVisible || forceDraw) {
+        for (const item of flashingItems) {
+          item.draw(this.animationCtx);
+        }
+      }
+
+      this.flashingAnimation.curPosition = 0;
+      this.flashingAnimation.isCurrentlyVisible = !this.flashingAnimation.isCurrentlyVisible;
     }
   }
 
@@ -146,7 +199,7 @@ export default class Game {
 
     // handle CPU logic as needed and move all players
     for (const player of this.players) {
-      if (player.isCPU) this.#setCPUMovement(player);
+      if (player.isCPU || player.inRecovery) this.#setCPUMovement(player);
 
       player.move();
     }
@@ -161,8 +214,6 @@ export default class Game {
     }
 
     if (haveItemsUpdated) {
-      this.foregroundCtx.clearRect(0, 0, this.board.width, this.board.height);
-
       if (this.items.filter((item) => !(item instanceof Fruit)).length === 0) {
         this.end();
       }
@@ -175,6 +226,8 @@ export default class Game {
       this.#drawItems();
     }
 
+    this.#drawText();
+    this.#drawFlashingItems(haveItemsUpdated);
     this.#drawPlayers();
   }
 
@@ -191,7 +244,7 @@ export default class Game {
     if (pacman.position) {
       for (let i = 0; i < ghosts.length; i++) {
         const ghost = ghosts[i];
-        if (ghost.position) {
+        if (ghost.position && !ghost.inRecovery) {
           let isCollision = false;
 
           if (pacman.position.x === ghost.position.x) {
@@ -203,11 +256,13 @@ export default class Game {
 
           if (isCollision) {
             decisions.havePlayersDied = true;
-            if (pacman.isPoweredUp) {
+            if (pacman.isPoweredUp && ghost.isScared) {
+              this.#createTextElement(100, { ...ghost.position }, ghost.color);
               pacman.incrementScore(100);
-              ghost.despawn();
+              ghost.recover();
             }
             else {
+              this.#createTextElement(150, { ...pacman.position }, pacman.color);
               ghost.incrementScore(150);
               pacman.despawn();
               break;
@@ -231,6 +286,10 @@ export default class Game {
   
               if (item instanceof PowerPill) {
                 this.#triggerPowerUp();
+              }
+
+              if (item instanceof Fruit) {
+                this.#createTextElement(item.points, item.position);
               }
   
               decisions.haveItemsUpdated = true;
@@ -278,10 +337,15 @@ export default class Game {
   }
 
   #setCPUMovement(player) {
-    if (!player.isCPU) return;
+    if (!player.isCPU && !player.inRecovery) return;
 
-    if (player instanceof Ghost && !player.travelModeToggleTimeoutId) {
-      player.toggleTravelMode();
+    if (player instanceof Ghost) {
+      if (!player.travelModeToggleTimeoutId) {
+        player.toggleTravelMode();
+      }
+      if (player.inRecovery && player.currentPath.isLair) {
+        return player.endRecovery();
+      }
     }
 
     if (player.currentPath instanceof Intersection || (!player.movement?.x && !player.movement?.y)) {
@@ -304,12 +368,14 @@ export default class Game {
         if (!isTravelingThroughPortal) {
           if (player.position.x === nextIntersection.position.x) {
             player.setMovement({
-              y: (player.position.y < nextIntersection.position.y) ? 1 : -1
+              y: (player.position.y < nextIntersection.position.y) ? 1 : -1,
+              isCPUMove: true
             });
           }
           else {
             player.setMovement({
-              x: (player.position.x < nextIntersection.position.x) ? 1 : -1
+              x: (player.position.x < nextIntersection.position.x) ? 1 : -1,
+              isCPUMove: true
             });
           }
         }

@@ -2,13 +2,15 @@ import Game from './utilities/Game.js';
 import { PacMan, Blinky, Clyde, Inky, Pinky } from './utilities/Players/index.js';
 
 const foregroundCanvas = document.getElementById('foreground-layer');
+const animationCanvas = document.getElementById('animation-layer');
+const textCanvas = document.getElementById('text-layer');
 const playerCanvas = document.getElementById('player-layer');
 
 const movementKeys = ['w', 'a', 's', 'd', 'ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'];
 
 const res = await fetch('./assets/map.json');
 const map = await res.json();
-const game = new Game({ foregroundCanvas, playerCanvas, map });
+const game = new Game({ foregroundCanvas, animationCanvas, textCanvas, playerCanvas, map });
 
 const player = new PacMan();
 player.isCPU = false; // TODO: Change where this happens

@@ -6,7 +6,8 @@ export default class PowerPill extends Item {
     super({
       position,
       size: 12,
-      points: 0
+      points: 0,
+      isFlashing: true,
     });
   }
 

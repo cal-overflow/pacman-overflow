@@ -6,6 +6,7 @@ export default class Player {
   constructor() {
     // Find an alternative to 'id'. This is not random enough :(
     this.id = Math.floor(Math.random() * 100);
+    this.name = 'Player';
     this.width = 30;
     this.height = 30;
     this.position = undefined;
@@ -42,6 +43,8 @@ export default class Player {
   }
 
   setMovement(movement) {
+    if (this.isMovementDisabled && !movement.isCPUMove) return;
+
     if ((this.currentPath?.isHorizontal && movement.x) || (this.currentPath?.isVertical && movement.y)) {
       this.movement = {
         ...this.movement,
@@ -113,7 +116,7 @@ export default class Player {
   }
 
   draw(ctx) {
-    ctx.fillStyle = '#FFFFFF';
+    ctx.fillStyle = this.color;
     ctx.fillRect(this.position.x - (this.width / 2), this.position.y - (this.height / 2), this.width, this.height);
   }
 

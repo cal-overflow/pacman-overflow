@@ -13,6 +13,7 @@ export default class Ghost extends Player {
     this.isScared = false;
     this.isScatterMode = true;
     this.travelModeToggleTimeoutId = undefined;
+    this.inRecovery = false;
   }
 
   spawn({ paths, map }) {
@@ -40,7 +41,7 @@ export default class Ghost extends Player {
   }
 
   getTargetPosition(game) {
-    if (this.isScatterMode) {
+    if (!this.inRecovery && this.isScatterMode) {
       const scatterPath = game.map.ghostScatterPaths[this.key];
 
       for (let i = 0; i + 1 < scatterPath.length; i++) {
@@ -53,7 +54,7 @@ export default class Ghost extends Player {
       return scatterPath[0];
     }
 
-    if (this.isScared && Math.random() < CHANCE_RUN_FROM_POWERED_PACMAN) {
+    if (this.inRecovery || (this.isScared && Math.random() < CHANCE_RUN_FROM_POWERED_PACMAN)) {
       const lairPaths = game.paths.filter((path) => path.isLair);
       const chosenPath = lairPaths[Math.floor(Math.random() * lairPaths.length)];
       
@@ -65,9 +66,24 @@ export default class Ghost extends Player {
     return pacman.position;
   }
 
+  recover() {
+    this.inRecovery = true;
+    this.isMovementDisabled = true;
+  }
+
+  endRecovery() {
+    this.inRecovery = false;
+    this.isMovementDisabled = false;
+    this.isScared = false;
+  }
+
   drawScared(ctx) {
-    // This is to be envoked when the ghost is scared
     ctx.fillStyle = '#0000FF';
+    ctx.fillRect(this.position.x - (this.width / 2), this.position.y - (this.height / 2), this.width, this.height);
+  }
+
+  drawRecovering(ctx) {
+    ctx.fillStyle = '#c9c9c9';
     ctx.fillRect(this.position.x - (this.width / 2), this.position.y - (this.height / 2), this.width, this.height);
   }
 }
