@@ -1,9 +1,10 @@
 export default class Item {
-  constructor({ position, points, lifespan, size }) {
+  constructor({ position, points, lifespan, size, isFlashing }) {
     this.position = position;
     this.points = points;
     this.lifespan = lifespan;
     this.size = size;
+    this.isFlashing = isFlashing;
   }
 
   // override this function for more advanced items (i.e. fruits)

@@ -21,6 +21,7 @@ describe('PowerPill', () => {
     expect(pill.points).toEqual(0);
     expect(pill.lifespan).toBeUndefined();
     expect(pill.size).toEqual(12);
+    expect(pill.isFlashing).toBeTruthy();
   });
 
   describe('use()', () => {

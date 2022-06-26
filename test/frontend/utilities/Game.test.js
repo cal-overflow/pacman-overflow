@@ -14,7 +14,7 @@ const generateMockCanvas = (ctxMock) => ({
 
 describe('Game', () => {
   const totalItems = map.items.dots.length + map.items.powerPills.length;
-  let game, foregroundCtxMock, playerCtxMock, itemDrawMock;
+  let game, foregroundCtxMock, animationCtxMock, playerCtxMock, itemDrawMock;
 
   beforeEach(() => {
     itemDrawMock = jest.spyOn(Item.prototype, 'draw');
@@ -39,12 +39,28 @@ describe('Game', () => {
       stroke: jest.fn()
     };
 
-    game = new Game({ foregroundCanvas: generateMockCanvas(foregroundCtxMock), playerCanvas: generateMockCanvas(playerCtxMock), map });
+    animationCtxMock = {
+      fillStyle: '#000000',
+      clearRect: jest.fn(),
+      fillRect: jest.fn(),
+      beginPath: jest.fn(),
+      arc: jest.fn(),
+      fill: jest.fn(),
+      stroke: jest.fn()
+    };
+
+    game = new Game({
+      foregroundCanvas: generateMockCanvas(foregroundCtxMock),
+      playerCanvas: generateMockCanvas(playerCtxMock),
+      animationCanvas: generateMockCanvas(animationCtxMock),
+      map
+    });
   });
   afterEach(jest.clearAllMocks);
 
   it('creates a game object correctly values', () => {
     expect(game.foregroundCtx).toMatchObject(foregroundCtxMock);
+    expect(game.animationCtx).toMatchObject(animationCtxMock);
     expect(game.playerCtx).toMatchObject(playerCtxMock);
     expect(game.players).toEqual([]);
     expect(game.items).toHaveLength(totalItems);
@@ -53,8 +69,8 @@ describe('Game', () => {
     expect(game.interval).toBeUndefined();
   });
 
-  it('should draw each of the items', () => {
-    expect(itemDrawMock).toHaveBeenCalledTimes(totalItems);
+  it('should draw each of the dot items', () => {
+    expect(itemDrawMock).toHaveBeenCalledTimes(map.items.dots.length);
   });
 
   describe('addPlayer()', () => {

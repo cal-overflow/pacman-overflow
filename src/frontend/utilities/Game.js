@@ -7,8 +7,9 @@ import Portal from './Portal.js';
 const POWER_UP_DURATION = 7500;
 
 export default class Game {
-  constructor({ foregroundCanvas, playerCanvas, map }) {
+  constructor({ foregroundCanvas, animationCanvas, playerCanvas, map }) {
     this.foregroundCtx = foregroundCanvas.getContext('2d');
+    this.animationCtx = animationCanvas.getContext('2d');
     this.playerCtx = playerCanvas.getContext('2d');
     this.players = [];
     this.intersections = [];
@@ -17,6 +18,11 @@ export default class Game {
     this.interval = undefined;
     this.powerUpInterval = undefined;
     this.map = map;
+    this.flashingAnimation = {
+      duration: 34,
+      isCurrentlyVisible: true,
+      curPosition: 0,
+    };
 
     this.board = {
       width: foregroundCanvas.width,
@@ -38,6 +44,7 @@ export default class Game {
 
     // draw items
     this.#drawItems();
+    this.#drawFlashingItems();
   }
 
   #generatePaths({ inaccessiblePaths, portals, lairPaths }) {
@@ -106,8 +113,29 @@ export default class Game {
   }
 
   #drawItems() {
-    for (const item of this.items) {
-      item.draw(this.foregroundCtx);
+    this.foregroundCtx.clearRect(0, 0, this.board.width, this.board.height);
+    const dots = this.items.filter((item) => item instanceof Dot);
+
+    for (const dot of dots) {
+      dot.draw(this.foregroundCtx);
+    }
+  }
+
+  #drawFlashingItems(forceDraw) {
+    this.flashingAnimation.curPosition++;
+
+    if (this.flashingAnimation.curPosition >= this.flashingAnimation.duration) {
+      this.animationCtx.clearRect(0, 0, this.board.width, this.board.height);
+      const flashingItems = this.items.filter((item) => item.isFlashing);
+      
+      if (this.flashingAnimation.isCurrentlyVisible || forceDraw) {
+        for (const item of flashingItems) {
+          item.draw(this.animationCtx);
+        }
+      }
+
+      this.flashingAnimation.curPosition = 0;
+      this.flashingAnimation.isCurrentlyVisible = !this.flashingAnimation.isCurrentlyVisible;
     }
   }
 
@@ -161,8 +189,6 @@ export default class Game {
     }
 
     if (haveItemsUpdated) {
-      this.foregroundCtx.clearRect(0, 0, this.board.width, this.board.height);
-
       if (this.items.filter((item) => !(item instanceof Fruit)).length === 0) {
         this.end();
       }
@@ -175,6 +201,7 @@ export default class Game {
       this.#drawItems();
     }
 
+    this.#drawFlashingItems(haveItemsUpdated);
     this.#drawPlayers();
   }
 

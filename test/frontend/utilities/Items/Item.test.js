@@ -22,6 +22,7 @@ describe('Item', () => {
     expect(item.points).toEqual(points);
     expect(item.lifespan).toBeUndefined();
     expect(item.size).toEqual(size);
+    expect(item.isFlashing).not.toBeTruthy();
   });
 
   describe('draw()', () => {
