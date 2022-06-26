@@ -3,6 +3,7 @@ import Ghost from './Ghost.js';
 export default class Inky extends Ghost {
   constructor() {
     super();
+    this.name = 'Inky';
     this.color = '#ADD8E6';
     this.key = 'inky';
   }
@@ -15,9 +16,7 @@ export default class Inky extends Ghost {
       super.drawScared(ctx);
     }
     else {
-      // TODO: change to draw Inky
-      ctx.fillStyle = this.color;
-      ctx.fillRect(this.position.x - (this.width / 2), this.position.y - (this.height / 2), this.width, this.height);
+      super.draw(ctx);
     }
   }
 }

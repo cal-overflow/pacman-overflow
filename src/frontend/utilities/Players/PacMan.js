@@ -8,6 +8,7 @@ const CHANCE_IGNORE_GHOST_WHEN_POWERED_UP = 0.5;
 export default class PacMan extends Player {
   constructor() {
     super();
+    this.name = 'PacMan';
     this.color = '#FFFF00';
     this.isPoweredUp = false;
   }
@@ -43,13 +44,6 @@ export default class PacMan extends Player {
         return;
       }
     }
-  }
-
-  // TODO: override draw method
-  // when `isPoweredUp`, draw PacMan with teeth
-  draw(ctx) {
-    ctx.fillStyle = this.color;
-    ctx.fillRect(this.position.x - (this.width / 2), this.position.y - (this.height / 2), this.width, this.height);
   }
 
   getTargetPosition(game) {
