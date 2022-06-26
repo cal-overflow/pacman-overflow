@@ -118,10 +118,10 @@ export default class Game {
 
   #drawItems() {
     this.foregroundCtx.clearRect(0, 0, this.board.width, this.board.height);
-    const dots = this.items.filter((item) => item instanceof Dot);
+    const nonFlashingItems = this.items.filter((item) => !item.isFlashing);
 
-    for (const dot of dots) {
-      dot.draw(this.foregroundCtx);
+    for (const item of nonFlashingItems) {
+      item.draw(this.foregroundCtx);
     }
   }
 
