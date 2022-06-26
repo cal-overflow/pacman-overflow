@@ -287,6 +287,10 @@ export default class Game {
               if (item instanceof PowerPill) {
                 this.#triggerPowerUp();
               }
+
+              if (item instanceof Fruit) {
+                this.#createTextElement(item.points, item.position);
+              }
   
               decisions.haveItemsUpdated = true;
             }
