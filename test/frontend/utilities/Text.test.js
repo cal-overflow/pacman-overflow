@@ -20,7 +20,7 @@ describe('Text', () => {
     expect(text.position).toMatchObject(position);
     expect(text.value).toEqual(value);
     expect(text.color).toEqual('#808080');
-    expect(text.size).toEqual('22px');
+    expect(text.size).toEqual('14px');
   });
 
   describe('constructing with a custom color and size', () => {

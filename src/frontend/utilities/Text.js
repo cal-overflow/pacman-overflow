@@ -1,6 +1,6 @@
 
 export default class Text {
-  constructor({ position, value, color='#808080', size='22px', }) {
+  constructor({ position, value, color='#808080', size='14px', }) {
     this.position = position;
     this.value = value;
     this.color = color;
@@ -8,9 +8,9 @@ export default class Text {
   }
 
   draw(ctx) {
-    // TODO: add custom font and more stying
     ctx.fillStyle = this.color;
-    ctx.font = `${this.size} bold Mono`;
-    ctx.fillText(this.value, this.position.x - 16, this.position.y + 20);
+    ctx.font = `${this.size} 'Press Start 2P'`;
+    ctx.textAlign = 'center';
+    ctx.fillText(this.value, this.position.x, this.position.y + 20);
   }
 }
