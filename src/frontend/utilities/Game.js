@@ -199,7 +199,7 @@ export default class Game {
 
     // handle CPU logic as needed and move all players
     for (const player of this.players) {
-      if (player.isCPU) this.#setCPUMovement(player);
+      if (player.isCPU || player.inRecovery) this.#setCPUMovement(player);
 
       player.move();
     }
@@ -244,7 +244,7 @@ export default class Game {
     if (pacman.position) {
       for (let i = 0; i < ghosts.length; i++) {
         const ghost = ghosts[i];
-        if (ghost.position) {
+        if (ghost.position && !ghost.inRecovery) {
           let isCollision = false;
 
           if (pacman.position.x === ghost.position.x) {
@@ -256,13 +256,13 @@ export default class Game {
 
           if (isCollision) {
             decisions.havePlayersDied = true;
-            if (pacman.isPoweredUp) {
-              this.#createTextElement(100, ghost.position, ghost.color);
+            if (pacman.isPoweredUp && ghost.isScared) {
+              this.#createTextElement(100, { ...ghost.position }, ghost.color);
               pacman.incrementScore(100);
-              ghost.despawn();
+              ghost.recover();
             }
             else {
-              this.#createTextElement(150, pacman.position, pacman.color);
+              this.#createTextElement(150, { ...pacman.position }, pacman.color);
               ghost.incrementScore(150);
               pacman.despawn();
               break;
@@ -333,10 +333,15 @@ export default class Game {
   }
 
   #setCPUMovement(player) {
-    if (!player.isCPU) return;
+    if (!player.isCPU && !player.inRecovery) return;
 
-    if (player instanceof Ghost && !player.travelModeToggleTimeoutId) {
-      player.toggleTravelMode();
+    if (player instanceof Ghost) {
+      if (!player.travelModeToggleTimeoutId) {
+        player.toggleTravelMode();
+      }
+      if (player.inRecovery && player.currentPath.isLair) {
+        return player.endRecovery();
+      }
     }
 
     if (player.currentPath instanceof Intersection || (!player.movement?.x && !player.movement?.y)) {
@@ -359,12 +364,14 @@ export default class Game {
         if (!isTravelingThroughPortal) {
           if (player.position.x === nextIntersection.position.x) {
             player.setMovement({
-              y: (player.position.y < nextIntersection.position.y) ? 1 : -1
+              y: (player.position.y < nextIntersection.position.y) ? 1 : -1,
+              isCPUMove: true
             });
           }
           else {
             player.setMovement({
-              x: (player.position.x < nextIntersection.position.x) ? 1 : -1
+              x: (player.position.x < nextIntersection.position.x) ? 1 : -1,
+              isCPUMove: true
             });
           }
         }

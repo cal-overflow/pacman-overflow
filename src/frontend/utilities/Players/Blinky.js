@@ -9,7 +9,10 @@ export default class Blinky extends Ghost {
   }
 
   draw(ctx) {
-    if (this.isScared) {
+    if (this.inRecovery) {
+      super.drawRecovering(ctx);
+    }
+    else if (this.isScared) {
       super.drawScared(ctx);
     }
     else {

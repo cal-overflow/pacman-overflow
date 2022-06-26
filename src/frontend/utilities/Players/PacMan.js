@@ -72,13 +72,13 @@ export default class PacMan extends Player {
         if (!isGhostInLair || Math.random() < CHANCE_ATTACK_LAIR_WHEN_POWERED_UP) {
           ghost.distance = Math.abs(this.position.x - ghost.position.x) + Math.abs(this.position.y - ghost.position.y);
   
-          if ((!closestGhost || ghost.distance < closestGhost.distance) && !isGhostInLair) {
+          if ((!closestGhost || ghost.distance < closestGhost.distance) && !isGhostInLair && !ghost.inRecovery) {
             closestGhost = ghost;
           }
         }
       }
 
-      if (closestGhost && Math.random() < CHANCE_IGNORE_GHOST_WHEN_POWERED_UP)
+      if (closestGhost && closestGhost.isScared && Math.random() < CHANCE_IGNORE_GHOST_WHEN_POWERED_UP)
         return closestGhost.position;
     }
 

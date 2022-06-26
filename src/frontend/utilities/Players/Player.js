@@ -42,6 +42,8 @@ export default class Player {
   }
 
   setMovement(movement) {
+    if (this.isMovementDisabled && !movement.isCPUMove) return;
+
     if ((this.currentPath?.isHorizontal && movement.x) || (this.currentPath?.isVertical && movement.y)) {
       this.movement = {
         ...this.movement,
