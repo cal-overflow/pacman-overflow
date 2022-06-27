@@ -115,10 +115,28 @@ export default class Player {
     this.score += points;
   }
 
-  draw(ctx) {
-    ctx.fillStyle = this.color;
-    ctx.fillRect(this.position.x - (this.width / 2), this.position.y - (this.height / 2), this.width, this.height);
-  }
-
   getTargetPosition() { return; }
+
+  reduce() {
+    // const reducedSelf = {...this};
+
+    // delete reducedSelf.currentPath;
+    // delete reducedSelf.pathToTarget;
+    // delete travelModeToggleTimeout;
+
+    // return reducedSelf;
+
+    return {
+      name: this.name,
+      position: this.position,
+      width: this.width,
+      height: this.height,
+      movement: this.movement,
+      score: this.score,
+      isScared: this.isScared,
+      isPoweredUp: this.isPoweredUp,
+      inRecovery: this.inRecovery,
+      color: this.color,
+    };
+  }
 }

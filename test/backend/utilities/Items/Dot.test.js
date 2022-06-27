@@ -1,5 +1,5 @@
-import { Dot } from '@/frontend/utilities/Items';
-import { PacMan, Player } from '@/frontend/utilities/Players';
+import { Dot } from '@/backend/utilities/Items';
+import { PacMan, Player } from '@/backend/utilities/Players';
 import Chance from 'chance';
 
 const chance = new Chance();
@@ -19,6 +19,7 @@ describe('Dot', () => {
   it('creates a dot correctly', () => {
     expect(dot.position).toMatchObject(position);
     expect(dot.points).toEqual(5);
+    expect(dot.type).toEqual('dot');
     expect(dot.lifespan).toBeUndefined();
     expect(dot.size).toEqual(5);
   });

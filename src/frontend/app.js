@@ -1,46 +1,67 @@
-import Game from './utilities/Game.js';
-import { PacMan, Blinky, Clyde, Inky, Pinky } from './utilities/Players/index.js';
-
-const foregroundCanvas = document.getElementById('foreground-layer');
-const animationCanvas = document.getElementById('animation-layer');
-const textCanvas = document.getElementById('text-layer');
-const playerCanvas = document.getElementById('player-layer');
+import {
+  drawItems,
+  drawFlashingItems,
+  drawPlayers,
+  drawTextElements
+} from './Drawer.js';
 
 const movementKeys = ['w', 'a', 's', 'd', 'ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'];
+const backgroundCanvas = document.getElementById('background-layer');
+const itemCtx = document.getElementById('item-layer').getContext('2d');
+const flashingItemCtx = document.getElementById('flashing-item-layer').getContext('2d');
+const textCtx = document.getElementById('text-layer').getContext('2d');
+const playerCtx = document.getElementById('player-layer').getContext('2d');
+const board = {
+  width: backgroundCanvas.width,
+  height: backgroundCanvas.height
+};
+// eslint-disable-next-line no-undef
+const socket = io();
 
-const res = await fetch('./assets/map.json');
-const map = await res.json();
-const game = new Game({ foregroundCanvas, animationCanvas, textCanvas, playerCanvas, map });
+let items;
+let firstDraw = true;
 
-const player = new PacMan();
-player.isCPU = false; // TODO: Change where this happens
-const blinky = new Blinky();
-const clyde = new Clyde();
-const inky = new Inky();
-const pinky = new Pinky();
+const handleGame = (game) => {
+  if (game.items) {
+    items = game.items;
+    drawItems(items, itemCtx, board);
+  }
 
-game.addPlayer(player);
-game.addPlayer(blinky);
-game.addPlayer(clyde);
-game.addPlayer(inky);
-game.addPlayer(pinky);
-game.start();
+  drawFlashingItems(items, flashingItemCtx, board, firstDraw);
+  drawPlayers(game.players, playerCtx, board);
+  drawTextElements(game.textElements, textCtx, board);
+  firstDraw = false;
+};
+
+// TODO: change this
+socket.emit('getLobbies');
+socket.emit('joinLobby', 'default');
+
+socket.on('joinedLobby', () => {
+  socket.emit('loadGame');
+});
+
+socket.on('gameLoaded', (game) => {
+  handleGame(game);
+  socket.emit('startGame');
+});
+socket.on('game', handleGame);
 
 document.addEventListener('keydown', (event) => {
   if (movementKeys.includes(event.key)) {
     event.preventDefault();
 
     if (event.key === 'w' || event.key === 'ArrowUp') {
-      player.setMovement({ y: -1 });
+      socket.emit('movePlayer', { y: -1 });
     }
     else if (event.key === 'a' || event.key === 'ArrowLeft') {
-      player.setMovement({ x: -1 });
+      socket.emit('movePlayer', { x: -1 });
     }
     else if (event.key === 's' || event.key === 'ArrowDown') {
-      player.setMovement({ y: 1 });
+      socket.emit('movePlayer', { y: 1 });
     }
     else if (event.key === 'd' || event.key === 'ArrowRight') {
-      player.setMovement({ x: 1 });
+      socket.emit('movePlayer', { x: 1 });
     }
   }
 });

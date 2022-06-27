@@ -1,4 +1,4 @@
-import Text from '@/frontend/utilities/Text.js';
+import Text from '@/backend/utilities/Text.js';
 import Chance from 'chance';
 
 const chance = new Chance();

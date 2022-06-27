@@ -76,14 +76,4 @@ export default class Ghost extends Player {
     this.isMovementDisabled = false;
     this.isScared = false;
   }
-
-  drawScared(ctx) {
-    ctx.fillStyle = '#0000FF';
-    ctx.fillRect(this.position.x - (this.width / 2), this.position.y - (this.height / 2), this.width, this.height);
-  }
-
-  drawRecovering(ctx) {
-    ctx.fillStyle = '#c9c9c9';
-    ctx.fillRect(this.position.x - (this.width / 2), this.position.y - (this.height / 2), this.width, this.height);
-  }
 }

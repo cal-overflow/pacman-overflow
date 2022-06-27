@@ -14,12 +14,13 @@
   <h1 class="text-center">Multiplayer Pacman</h1>
   <div id="game" class="w-[992px] h-[896px] mx-auto relative">
     <canvas id="background-layer" height="992" width="896" class="absolute z-0" style="background-image: url('./assets/map-hd.png'); background-size: cover;">Your browser does not support HTML5.</canvas>
-    <canvas id="foreground-layer" height="992" width="896" class="absolute z-1">Your browser does not support HTML5.</canvas>
-    <canvas id="animation-layer" height="992" width="896" class="absolute z-2">Your browser does not support HTML5.</canvas>
+    <canvas id="item-layer" height="992" width="896" class="absolute z-1">Your browser does not support HTML5.</canvas>
+    <canvas id="flashing-item-layer" height="992" width="896" class="absolute z-2">Your browser does not support HTML5.</canvas>
     <canvas id="text-layer" height="992" width="896" class="absolute z-3">Your browser does not support HTML5.</canvas>
     <canvas id="player-layer" height="992" width="896" class="absolute z-4">Your browser does not support HTML5.</canvas>
   </div>
 
+  <script src="/socket.io/socket.io.js"></script>
   <script type="module" src="app.js"></script>
 </body>
 </html>

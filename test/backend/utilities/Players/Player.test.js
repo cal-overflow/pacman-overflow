@@ -1,6 +1,6 @@
-import Intersection from '@/frontend/utilities/Intersection';
-import Path from '@/frontend/utilities/Path.js';
-import Player from '@/frontend/utilities/Players/Player.js';
+import Intersection from '@/backend/utilities/Intersection';
+import Path from '@/backend/utilities/Path.js';
+import Player from '@/backend/utilities/Players/Player.js';
 import Chance from 'chance';
 
 const chance = new Chance();
@@ -169,33 +169,6 @@ describe('Player', () => {
 
     it('increments the player score correctly', () => {
       expect(player.score).toEqual(points);
-    });
-  });
-
-  describe('draw()', () => {
-    let ctxMock;
-
-    beforeEach(() => {
-      player.position = {
-        x: chance.integer(),
-        y: chance.integer()
-      };
-
-      ctxMock = {
-        fillRect: jest.fn()
-      };
-
-      player.draw(ctxMock);
-    });
-
-    it('calls the ctx fillRect() method correctly', () => {
-      expect(ctxMock.fillRect).toBeCalled();
-      expect(ctxMock.fillRect).toBeCalledWith(
-        player.position.x - (player.width / 2),
-        player.position.y - (player.height / 2),
-        player.width,
-        player.height
-      );
     });
   });
 

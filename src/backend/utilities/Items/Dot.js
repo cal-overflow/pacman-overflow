@@ -4,6 +4,7 @@ import { PacMan } from '../Players/index.js';
 export default class Dot extends Item {
   constructor(position) {
     super({
+      type: 'dot',
       position,
       size: 5,
       points: 5

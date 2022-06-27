@@ -9,11 +9,7 @@ const POWER_UP_DURATION = 7500;
 const POINT_TEXT_VISIBILITY_DURATION = 1200;
 
 export default class Game {
-  constructor({ foregroundCanvas, animationCanvas, textCanvas, playerCanvas, map }) {
-    this.foregroundCtx = foregroundCanvas.getContext('2d');
-    this.textCtx = textCanvas.getContext('2d');
-    this.animationCtx = animationCanvas.getContext('2d');
-    this.playerCtx = playerCanvas.getContext('2d');
+  constructor({ map }) {
     this.players = [];
     this.intersections = [];
     this.paths = [];
@@ -22,18 +18,6 @@ export default class Game {
     this.interval = undefined;
     this.powerUpInterval = undefined;
     this.map = map;
-    this.flashingAnimation = {
-      duration: 34,
-      isCurrentlyVisible: true,
-      curPosition: 0,
-    };
-
-    this.board = {
-      width: foregroundCanvas.width,
-      height: foregroundCanvas.height
-    };
-
-    this.foregroundCtx.fillStyle = '#FFFFFF';
 
     this.#loadGameBoard(map);
   }
@@ -45,10 +29,6 @@ export default class Game {
 
     this.#generatePaths(map);
     this.#generateItems(map);
-
-    // draw items
-    this.#drawItems();
-    this.#drawFlashingItems();
   }
 
   #generatePaths({ inaccessiblePaths, portals, lairPaths }) {
@@ -116,15 +96,6 @@ export default class Game {
     }
   }
 
-  #drawItems() {
-    this.foregroundCtx.clearRect(0, 0, this.board.width, this.board.height);
-    const nonFlashingItems = this.items.filter((item) => !item.isFlashing);
-
-    for (const item of nonFlashingItems) {
-      item.draw(this.foregroundCtx);
-    }
-  }
-
   #createTextElement(value, position, color) {
     const textElement = new Text({
       position, 
@@ -137,37 +108,6 @@ export default class Game {
       const index = this.textElements.indexOf(textElement);
       this.textElements.splice(index, 1);
     }, POINT_TEXT_VISIBILITY_DURATION);
-  }
-  
-  #drawText() {
-    this.textCtx.clearRect(0, 0, this.board.width, this.board.height);
-    for (const text of this.textElements) {
-      text.draw(this.textCtx);
-    }
-  }
-
-  #drawFlashingItems(forceDraw) {
-    this.flashingAnimation.curPosition++;
-
-    if (this.flashingAnimation.curPosition >= this.flashingAnimation.duration) {
-      this.animationCtx.clearRect(0, 0, this.board.width, this.board.height);
-      const flashingItems = this.items.filter((item) => item.isFlashing);
-      
-      if (this.flashingAnimation.isCurrentlyVisible || forceDraw) {
-        for (const item of flashingItems) {
-          item.draw(this.animationCtx);
-        }
-      }
-
-      this.flashingAnimation.curPosition = 0;
-      this.flashingAnimation.isCurrentlyVisible = !this.flashingAnimation.isCurrentlyVisible;
-    }
-  }
-
-  #drawPlayers() {
-    for (const player of this.players) {
-      if (player.position) player.draw(this.playerCtx);
-    }
   }
 
   addPlayer(player) {
@@ -195,8 +135,6 @@ export default class Game {
   }
 
   update() {
-    this.playerCtx.clearRect(0, 0, this.board.width, this.board.height);
-
     // handle CPU logic as needed and move all players
     for (const player of this.players) {
       if (player.isCPU || player.inRecovery) this.#setCPUMovement(player);
@@ -222,13 +160,9 @@ export default class Game {
           this.items.push(new Fruit({ x: 448, y: 560 }));
         }
       }
-
-      this.#drawItems();
     }
 
-    this.#drawText();
-    this.#drawFlashingItems(haveItemsUpdated);
-    this.#drawPlayers();
+    return { haveItemsUpdated };
   }
 
   #collisionHandler() {

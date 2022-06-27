@@ -1,5 +1,5 @@
-import Path from '@/frontend/utilities/Path.js';
-import Intersection from '@/frontend/utilities/Intersection.js';
+import Path from '@/backend/utilities/Path.js';
+import Intersection from '@/backend/utilities/Intersection.js';
 import Chance from 'chance';
 
 const chance = new Chance();

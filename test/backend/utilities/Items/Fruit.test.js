@@ -1,4 +1,4 @@
-import { Fruit } from '@/frontend/utilities/Items';
+import { Fruit } from '@/backend/utilities/Items';
 import Chance from 'chance';
 
 const chance = new Chance();
@@ -17,6 +17,7 @@ describe('Fruit', () => {
 
   it('creates a fruit correctly', () => {
     expect(fruit.position).toMatchObject(position);
+    expect(fruit.type).toEqual('fruit');
     expect(fruit.points).not.toEqual(0);
     expect(fruit.points % 50 == 0).toBeTruthy();
     expect(fruit.lifespan).toBeUndefined();
