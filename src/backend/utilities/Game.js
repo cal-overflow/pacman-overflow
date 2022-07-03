@@ -96,11 +96,12 @@ export default class Game {
     }
   }
 
-  #createTextElement(value, position, color) {
+  #createTextElement({ value, position, color, size }) {
     const textElement = new Text({
       position, 
       value: `${value}`,
-      color
+      color,
+      size
     });
     this.textElements.push(textElement);
 
@@ -121,17 +122,15 @@ export default class Game {
   }
 
   start() {
-    this.interval = setInterval(() => this.update(), 1);
+    if (!this.interval) {
+      this.interval = setInterval(() => this.update(), 1);
+    }
   }
 
   end() {
     clearInterval(this.interval);
     this.interval = undefined;
-    
-    // dev purposes only (TODO: remove)
-    for (const player of this.players) {
-      console.log(`${player.constructor.name}: ${player.score}`);
-    }
+    this.isOver = true;
   }
 
   update() {
@@ -191,12 +190,12 @@ export default class Game {
           if (isCollision) {
             decisions.havePlayersDied = true;
             if (pacman.isPoweredUp && ghost.isScared) {
-              this.#createTextElement(100, { ...ghost.position }, ghost.color);
+              this.#createTextElement({ value: 100, position: { ...ghost.position }, color: ghost.color });
               pacman.incrementScore(100);
               ghost.recover();
             }
             else {
-              this.#createTextElement(150, { ...pacman.position }, pacman.color);
+              this.#createTextElement({ value: 150, position: { ...pacman.position }, color: pacman.color });
               ghost.incrementScore(150);
               pacman.despawn();
               break;
@@ -221,9 +220,8 @@ export default class Game {
               if (item instanceof PowerPill) {
                 this.#triggerPowerUp();
               }
-
-              if (item instanceof Fruit) {
-                this.#createTextElement(item.points, item.position);
+              else if (item instanceof Fruit) {
+                this.#createTextElement({ value: item.points, position: item.position });
               }
   
               decisions.haveItemsUpdated = true;
