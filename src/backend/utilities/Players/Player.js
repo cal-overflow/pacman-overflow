@@ -118,22 +118,17 @@ export default class Player {
   getTargetPosition() { return; }
 
   reduce() {
-    // const reducedSelf = {...this};
-
-    // delete reducedSelf.currentPath;
-    // delete reducedSelf.pathToTarget;
-    // delete travelModeToggleTimeout;
-
-    // return reducedSelf;
-
     return {
       name: this.name,
+      key: this.key,
+      username: this.username,
       position: this.position,
       width: this.width,
       height: this.height,
       movement: this.movement,
       score: this.score,
       isScared: this.isScared,
+      isCPU: this.isCPU,
       isPoweredUp: this.isPoweredUp,
       inRecovery: this.inRecovery,
       color: this.color,
