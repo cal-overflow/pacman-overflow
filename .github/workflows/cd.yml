@@ -6,6 +6,10 @@ on:
     branches:
       - ci-cd
 
+permissions:
+      id-token: write
+      contents: read
+
 env:
   REGION: us-east-1
 
