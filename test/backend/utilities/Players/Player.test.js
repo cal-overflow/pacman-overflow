@@ -184,4 +184,19 @@ describe('Player', () => {
       });
     });
   });
+
+  describe('reduce()', () => {
+    let result;
+    beforeEach(() => {
+      result = player.reduce();
+    });
+
+    it('returns an object', () => {
+      expect(result).toBeInstanceOf(Object);
+    });
+
+    it('returns an object without the "currentPath" property', () => {
+      expect(result.currentPath).toBeUndefined();
+    });
+  });
 });
