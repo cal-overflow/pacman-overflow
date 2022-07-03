@@ -28,6 +28,14 @@ const gameEndCallback = (gameData, { lobby }) => {
   io.to(lobby).emit('gameEnd', gameData);
 };
 
+const startGame = (game, socket) => {
+  if (!game.interval && !game.isOver) {
+    const sendUpdate = (gameData) => gameUpdateCallback(gameData, socket);
+    const sendGameOver = (gameData) => gameEndCallback(gameData, socket);
+    game.start(sendUpdate, sendGameOver);
+  }
+};
+
 io.on('connection', (socket) => {
   socket.on('getLobbies', () => {
     socket.emit('lobbies', (io.sockets.adapter.rooms));
@@ -46,7 +54,7 @@ io.on('connection', (socket) => {
         }
       }
 
-      if (!Object.keys(lobbies).length) {
+      if (!socket.lobby) {
         const newLobby = chance.guid();
         socket.join(newLobby);
         socket.lobby = newLobby;
@@ -72,10 +80,6 @@ io.on('connection', (socket) => {
 
     // TODO: need to change this when there is only one character to choose
     // Consider adding a "spectate" option that is visible when there is already at least one player present
-    // socket.emit(
-    //   'selectPlayer', 
-    //   lobbies[socket.lobby].game.players.map((player) => player.reduce()),
-    // );
 
     socket.emit('joinedLobby', {
       lobbyName: socket.lobby,
@@ -84,8 +88,10 @@ io.on('connection', (socket) => {
   });
   
   socket.on('selectCharacter', (characterKey) => {
-    const player = lobbies[socket.lobby].game.players.find((player) => player.key === characterKey);
+    const game = lobbies[socket.lobby].game;
+    const player = game.players.find((player) => player.key === characterKey);
     if (player.isCPU) {
+      player.id = socket.id;
       player.isCPU = false;
       player.username = socket.username;
       socket.playerKey = characterKey;
@@ -99,16 +105,31 @@ io.on('connection', (socket) => {
     player.setMovement(movement);
   });
 
-  // TODO: delete
-  socket.on('gameStart', () => {
-    const game = lobbies[socket.lobby].game;
-    if (!game.interval && !game.isOver) {
-      const sendUpdate = (gameData) => gameUpdateCallback(gameData, socket);
-      const sendGameOver = (gameData) => gameEndCallback(gameData, socket);
-      game.start(sendUpdate, sendGameOver);
+  socket.on('readyToPlay', () => {
+    const lobby = lobbies[socket.lobby];
+    
+    const player = lobby.game.players.find(({ id }) => id === socket.id);
+    player.isReady = true;
+    socket.isReady = true;
+
+
+    let allPlayersReady = true;
+    for (const socket of lobby.sockets) {
+      if (!socket.isReady) {
+        allPlayersReady = false;
+      }
+    }
+
+    if (allPlayersReady) {
+      const game = lobbies[socket.lobby].game;
+      startGame(game, socket);
+    }
+    else {
+      sendCharacterAssignments(socket);
     }
   });
 
+  // TODO: delete
   socket.on('gameEnd', () => {
     lobbies[socket.lobby].game.end();
   });
@@ -125,7 +146,9 @@ io.on('connection', (socket) => {
     lobby.sockets.splice(socketIndex, 1);
 
     if (!(lobby.sockets.length)) {
-      lobby.game?.end();
+      if (lobby.game.interval && !lobby.game.isOver) {
+        lobby.game?.end();
+      }
 
       delete lobbies[socket.lobby];
       return;
@@ -135,6 +158,8 @@ io.on('connection', (socket) => {
     const currentPlayer = players.find(({ username }) => username === socket.username);
     if (currentPlayer) {
       delete currentPlayer.username;
+      delete currentPlayer.id;
+      delete currentPlayer.isReady;
       currentPlayer.isCPU = true;
     }
 

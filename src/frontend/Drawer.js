@@ -6,6 +6,11 @@ const flashingAnimation = {
   curPosition: 0,
 };
 
+const colors = {
+  actionMessage: '#FFFFFF',
+  readyOrNot: '#545454'
+};
+
 const drawItems = (items, ctx, board) => {
   ctx.clearRect(0, 0, board.width, board.height);
 
@@ -99,7 +104,16 @@ const drawTextElements = (elements, ctx, board) => {
   }
 };
 
-const drawCharacterSelection = ({ ctx, board, players, highlightedPlayerKey, showScores, titleText='Select your character' }) => {
+const drawCharacters = ({
+  ctx,
+  board,
+  players,
+  highlightedPlayerKey,
+  showScores,
+  titleText='Select your character',
+  actionMessage,
+  showReadyOrNot
+}) => {
   ctx.clearRect(0, 0, board.width, board.height);
   const size = 100;
 
@@ -107,6 +121,14 @@ const drawCharacterSelection = ({ ctx, board, players, highlightedPlayerKey, sho
   ctx.textAlign = 'center';
   ctx.font = "40px 'Press Start 2P'";
   ctx.fillText(titleText, board.width / 2, 400);
+
+  if (actionMessage) {
+    ctx.font = "14px 'Press Start 2P'";
+    ctx.fillStyle = colors.actionMessage;
+    ctx.fillText(actionMessage, board.width / 2, 800);
+  }
+
+
   for (const character of characters) {
     const player = players.find(({ key }) => key === character.key);
 
@@ -132,8 +154,31 @@ const drawCharacterSelection = ({ ctx, board, players, highlightedPlayerKey, sho
       ctx.fillText(player.score, character.position.x, character.position.y + size + 60, size, size);
     }
     
+    if (showReadyOrNot && player.isReady) {
+      ctx.font = "10px 'Press Start 2P'";
+      ctx.fillStyle = colors.actionMessage;
+      ctx.fillText('Ready', character.position.x, character.position.y + size + 65, size, size);
+    }
   }
   ctx.globalAlpha = 1;
+};
+
+const drawCharacterSelection = ({
+  ctx,
+  board,
+  players,
+  highlightedPlayerKey,
+  actionMessage
+}) => {
+  drawCharacters({
+    ctx,
+    board,
+    players,
+    highlightedPlayerKey,
+    titleText: 'Select your character',
+    actionMessage,
+    showReadyOrNot: true
+  });
 };
 
 const drawGameOverScreen = ({ ctx, board, players }) => {
@@ -143,7 +188,16 @@ const drawGameOverScreen = ({ ctx, board, players }) => {
   ctx.textAlign = 'center';
   ctx.font = "40px 'Press Start 2P'";
   ctx.fillText('Game Over', board.width / 2, 400);
-  drawCharacterSelection({ ctx, board, players, showScores: true, titleText: 'Game Over' });
+
+  drawCharacters({
+    ctx,
+    board,
+    players,
+    showScores: true,
+    titleText: 'Game Over',
+    displayReadyStatus: false,
+    actionMessage: 'Press space to play again'
+  });
 };
 
 export {

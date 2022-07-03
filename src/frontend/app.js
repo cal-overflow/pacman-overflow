@@ -32,7 +32,7 @@ let gameStatus;
 let copyOfPlayers = [];
 const lobby = queryParams.get('lobby');
 const scoreboardRowClasses = ['scoreboard-row-1', 'scoreboard-row-2', 'scoreboard-row-3', 'scoreboard-row-4', 'scoreboard-row-5'];
-
+let isReadyToPlay = false;
 
 const selectPlayer = ({ players }) => {
   copyOfPlayers = players;
@@ -93,12 +93,15 @@ socket.on('joinedLobby', ({ lobbyName, game }) => {
 socket.on('characterAssignment', (players) => {
   assignedCharacter = players.find((player) => player.username === username);
   let highlightedPlayerKey;
+  let actionMessage;
 
   if (assignedCharacter) {
+    isReadyToPlay = assignedCharacter.isReady;
     highlightedPlayerKey = assignedCharacter.key;
+    actionMessage = 'Press space when ready';
   }
 
-  drawCharacterSelection({ ctx: menuCtx, board, players, highlightedPlayerKey });
+  drawCharacterSelection({ ctx: menuCtx, board, players, highlightedPlayerKey, actionMessage });
   copyOfPlayers = players;
 });
 
@@ -111,7 +114,7 @@ socket.on('gameEnd', (gameData) => {
   menuCanvas.classList.remove('invisible');
   drawGameOverScreen({ ctx: menuCtx, board, ...gameData });
 
-  setTimeout(() => window.location.href = '../', 20000);
+  setTimeout(() => window.location.href = '../', 60000);
 });
 
 document.addEventListener('keydown', (event) => {
@@ -135,13 +138,12 @@ document.addEventListener('keydown', (event) => {
     }
 
   }
-  // TODO: delete
-  if (event.key === ' ' || event.code === 'space') {
-    if (!gameStatus) {
-      socket.emit('gameStart');
+  else if (event.key === ' ' || event.code === 'space') {
+    if (!gameStatus && assignedCharacter && !isReadyToPlay) {
+      socket.emit('readyToPlay');
     }
-    else {
-      socket.emit('gameEnd');
+    if (gameStatus === 'over') {
+      window.location.href = '/';
     }
   }
 });
