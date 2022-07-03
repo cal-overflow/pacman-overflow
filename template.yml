@@ -5,16 +5,13 @@ Resources:
   EC2Instance:
     Type: AWS::EC2::Instance
     Properties:
-      KeyName: 
-      DisableApiTermination: 
-      ImageId: 
-      InstanceType: 
-      Monitoring: true|false
-      SecurityGroupIds:
-        - sg-id
+      KeyName: testKey
+      ImageId: ami-0059b7cd9f67d8050 # TODO: look more into this
+      InstanceType: m1.small
+      Monitoring: true
+      # SecurityGroupIds:
+      #   - sg-id
       UserData: !Base64 |
         #!/bin/bash -ex
         # put your script here
-      Tags:
-        - Key: key
-          Value: value
+        echo "Hello, World" > test.txt
