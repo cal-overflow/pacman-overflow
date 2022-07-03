@@ -8,7 +8,6 @@ export default class PacManGame extends Game {
     super({ map });
 
     const pacman = new PacMan();
-    pacman.isCPU = false; // TODO: delete
     const blinky = new Blinky();
     const clyde = new Clyde();
     const inky = new Inky();
@@ -21,16 +20,26 @@ export default class PacManGame extends Game {
     this.addPlayer(pinky);
   }
 
-  start(sendGameDataCallback) {
+  start(sendGameDataCallback, gameEndCallback) {
     this.interval = setInterval(() => {
       const { haveItemsUpdated } = this.update();
 
-      // after initial data send, only send items on update
-      sendGameDataCallback({
-        players: this.players.map((player) => player.reduce()),
-        items: haveItemsUpdated ? this.items : undefined,
-        textElements: this.textElements,
-      });
+      sendGameDataCallback(this.reduce({ includeItems: haveItemsUpdated }));
     }, UPDATE_INTERVAL);
+
+    this.gameEndCallback = gameEndCallback;
+  }
+
+  end() {
+    super.end();
+    this.gameEndCallback(this.reduce({}));
+  }
+
+  reduce({ includeItems=false }) {
+    return {
+      players: this.players.map((player) => player.reduce()),
+      items: includeItems ? this.items : undefined,
+      textElements: this.textElements
+    };
   }
 }

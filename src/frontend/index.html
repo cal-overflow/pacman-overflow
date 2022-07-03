@@ -10,17 +10,81 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet"> 
 </head>
-<body class="bg-gray-500">
-  <h1 class="text-center">Multiplayer Pacman</h1>
-  <div id="game" class="w-[992px] h-[896px] mx-auto relative">
-    <canvas id="background-layer" height="992" width="896" class="absolute z-0" style="background-image: url('./assets/map-hd.png'); background-size: cover;">Your browser does not support HTML5.</canvas>
-    <canvas id="item-layer" height="992" width="896" class="absolute z-1">Your browser does not support HTML5.</canvas>
-    <canvas id="flashing-item-layer" height="992" width="896" class="absolute z-2">Your browser does not support HTML5.</canvas>
-    <canvas id="text-layer" height="992" width="896" class="absolute z-3">Your browser does not support HTML5.</canvas>
-    <canvas id="player-layer" height="992" width="896" class="absolute z-4">Your browser does not support HTML5.</canvas>
-  </div>
+<body class="flex h-screen justify-center bg-gradient-to-r from-cyan-500 to-blue-700">
+  <form id="entrance-form" class="m-auto max-w-screen-md grid grid-rows-10 grid-flow-row gap-y-12 justify-center">
+    <h1 class="text-center text-4xl text-primary row-span-1">Multiplayer PacMan</h1>
+    <input type="text" maxlength="14" placeholder="Username" name="username" id="username-input" class="row-span-2 p-2 rounded max-w-sm mx-auto" />
+    <input type="submit" disabled class="disabled:opacity-70 rounded-md py-1 px-2 bg-primary text-black row-span-1 w-fit mx-auto cursor-pointer disabled:cursor-default hover:drop-shadow-lg disabled:hover:drop-shadow-none" value="Play" id="play-button">
+  </form>
 
-  <script src="/socket.io/socket.io.js"></script>
-  <script type="module" src="app.js"></script>
+  <div id="game" class="w-[896px] h-[992px] mx-auto relative hidden">
+    <div id="game-board" class="w-[896px] h-[992px] absolute invisible">
+      <canvas id="background-layer" height="992" width="896" class="absolute z-0" style="background-image: url('../assets/map-hd.png'); background-size: cover;">Your browser does not support HTML5.</canvas>
+      <canvas id="item-layer" height="992" width="896" class="absolute z-10">Your browser does not support HTML5.</canvas>
+      <canvas id="flashing-item-layer" height="992" width="896" class="absolute z-10">Your browser does not support HTML5.</canvas>
+      <canvas id="text-layer" height="992" width="896" class="absolute z-20">Your browser does not support HTML5.</canvas>
+      <canvas id="player-layer" height="992" width="896" class="absolute z-30">Your browser does not support HTML5.</canvas>
+    </div>
+    <canvas id="menu-layer" height="992" width="896" class="absolute z-50">Your browser does not support HTML5.</canvas>
+    
+    <div id="scoreboard" class="absolute z-40 top-0 right-1 w-80 invisible">
+      <p class="col-span-5 text-lg text-center text-white">Scoreboard</p>
+      <hr class="col-span-5" />
+      <div class="grid grid-cols-4 text-right gap-y-1">
+        <p id="pacman-score" class="text-pacman col-span-1 text-center"></p>
+        <p id="pacman-name" class="text-pacman col-span-3 text-right"></p>
+        
+        <p id="blinky-score" class="text-blinky col-span-1 text-center"></p>
+        <p id="blinky-name" class="text-blinky col-span-3 text-right"></p>
+
+        <p id="pinky-score" class="text-pinky col-span-1 text-center"></p>
+        <p id="pinky-name" class="text-pinky col-span-3 text-right"></p>
+
+        <p id="inky-score" class="text-inky col-span-1 text-center"></p>
+        <p id="inky-name" class="text-inky col-span-3 text-right"></p>
+        
+        <p id="clyde-score" class="text-clyde col-span-1 text-center"></p>
+        <p id="clyde-name" class="text-clyde col-span-3 text-right"></p>
+
+      </div>
+    </div>
+
+  </div>
+  
+  <script>
+    const form = document.getElementById('entrance-form');
+    const nameInput = document.getElementById('username-input');
+    const submitBtn = document.getElementById('play-button');
+    const game = document.getElementById('game');
+    
+    const username = localStorage.getItem('username');
+
+    if (username) {
+      nameInput.setAttribute('value', username);
+      submitBtn.removeAttribute('disabled');
+    }
+
+    nameInput.addEventListener('input', (event) => {
+      if (nameInput.value) {
+        submitBtn.removeAttribute('disabled');
+      }
+      else {
+        submitBtn.setAttribute('disabled', undefined);
+      }
+    });
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      localStorage.setItem('username', document.getElementById('username-input').value);
+
+      form.classList.add('hidden');
+      game.classList.remove('hidden');
+
+      await import('/socket.io/socket.io.js');
+      await import('./app.js');
+    });
+
+  </script>
 </body>
 </html>
