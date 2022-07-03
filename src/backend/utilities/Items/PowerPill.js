@@ -4,6 +4,7 @@ import { PacMan } from '../Players/index.js';
 export default class PowerPill extends Item {
   constructor(position) {
     super({
+      type: 'powerpill',
       position,
       size: 12,
       points: 0,

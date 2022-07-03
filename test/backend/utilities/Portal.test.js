@@ -1,6 +1,6 @@
-import { Player } from '@/frontend/utilities/Players';
-import Portal from '@/frontend/utilities/Portal.js';
-import Intersection from '@/frontend/utilities/Intersection.js';
+import { Player } from '@/backend/utilities/Players';
+import Portal from '@/backend/utilities/Portal.js';
+import Intersection from '@/backend/utilities/Intersection.js';
 import Chance from 'chance';
 
 const chance = new Chance();

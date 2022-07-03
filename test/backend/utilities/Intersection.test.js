@@ -1,6 +1,6 @@
-import Intersection from '@/frontend/utilities/Intersection.js';
-import Path from '@/frontend/utilities/Path';
-import Portal from '@/frontend/utilities/Portal.js';
+import Intersection from '@/backend/utilities/Intersection.js';
+import Path from '@/backend/utilities/Path';
+import Portal from '@/backend/utilities/Portal.js';
 import Chance from 'chance';
 
 const chance = new Chance();

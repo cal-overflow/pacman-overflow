@@ -1,5 +1,5 @@
-import { PowerPill } from '@/frontend/utilities/Items';
-import { Player, PacMan } from '@/frontend/utilities/Players';
+import { PowerPill } from '@/backend/utilities/Items';
+import { Player, PacMan } from '@/backend/utilities/Players';
 import Chance from 'chance';
 
 const chance = new Chance();
@@ -18,6 +18,7 @@ describe('PowerPill', () => {
 
   it('creates a PowerPill correctly', () => {
     expect(pill.position).toMatchObject(position);
+    expect(pill.type).toEqual('powerpill');
     expect(pill.points).toEqual(0);
     expect(pill.lifespan).toBeUndefined();
     expect(pill.size).toEqual(12);

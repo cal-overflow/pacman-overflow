@@ -4,8 +4,6 @@ import Portal from '../Portal.js';
 
 export default class Player {
   constructor() {
-    // Find an alternative to 'id'. This is not random enough :(
-    this.id = Math.floor(Math.random() * 100);
     this.name = 'Player';
     this.width = 30;
     this.height = 30;
@@ -115,10 +113,24 @@ export default class Player {
     this.score += points;
   }
 
-  draw(ctx) {
-    ctx.fillStyle = this.color;
-    ctx.fillRect(this.position.x - (this.width / 2), this.position.y - (this.height / 2), this.width, this.height);
-  }
-
   getTargetPosition() { return; }
+
+  reduce() {
+    return {
+      name: this.name,
+      key: this.key,
+      username: this.username,
+      position: this.position,
+      width: this.width,
+      height: this.height,
+      movement: this.movement,
+      isReady: this.isReady,
+      score: this.score,
+      isScared: this.isScared,
+      isCPU: this.isCPU,
+      isPoweredUp: this.isPoweredUp,
+      inRecovery: this.inRecovery,
+      color: this.color,
+    };
+  }
 }

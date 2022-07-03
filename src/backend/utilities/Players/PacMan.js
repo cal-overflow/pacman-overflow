@@ -9,6 +9,7 @@ export default class PacMan extends Player {
   constructor() {
     super();
     this.name = 'PacMan';
+    this.key = 'pacman';
     this.color = '#FFFF00';
     this.isPoweredUp = false;
   }

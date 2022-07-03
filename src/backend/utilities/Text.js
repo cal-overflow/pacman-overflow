@@ -6,11 +6,4 @@ export default class Text {
     this.color = color;
     this.size = size;
   }
-
-  draw(ctx) {
-    ctx.fillStyle = this.color;
-    ctx.font = `${this.size} 'Press Start 2P'`;
-    ctx.textAlign = 'center';
-    ctx.fillText(this.value, this.position.x, this.position.y + 20);
-  }
 }
