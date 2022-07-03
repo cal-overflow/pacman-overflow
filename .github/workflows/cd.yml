@@ -1,0 +1,29 @@
+name: cd
+
+# TODO: change this 
+on:
+  push:
+    branches:
+      - ci-cd
+
+env:
+  REGION: us-east-1
+
+jobs:
+  deploy:
+    environment: pacman-overflow
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@master
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.IAM_ROLE_ARN }}
+          aws-region: ${{ env.REGION }}
+
+      - name: Deploy cloudformation stack
+        run: |
+          sam deploy --stack-name "pacman-overflow" --region $REGION
+      
