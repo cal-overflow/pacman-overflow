@@ -1,0 +1,20 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: "Pac-Man Overflow stack"
+
+Resources:
+  EC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      KeyName: 
+      DisableApiTermination: 
+      ImageId: 
+      InstanceType: 
+      Monitoring: true|false
+      SecurityGroupIds:
+        - sg-id
+      UserData: !Base64 |
+        #!/bin/bash -ex
+        # put your script here
+      Tags:
+        - Key: key
+          Value: value
