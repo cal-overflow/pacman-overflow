@@ -1,3 +1,5 @@
+import characters from './assets/Characters.js';
+
 const flashingAnimation = {
   duration: 40,
   isCurrentlyVisible: true,
@@ -97,10 +99,58 @@ const drawTextElements = (elements, ctx, board) => {
   }
 };
 
+const drawCharacterSelection = ({ ctx, board, players, highlightedPlayerKey, showScores, titleText='Select your character' }) => {
+  ctx.clearRect(0, 0, board.width, board.height);
+  const size = 100;
+
+  ctx.fillStyle = '#000000';
+  ctx.textAlign = 'center';
+  ctx.font = "40px 'Press Start 2P'";
+  ctx.fillText(titleText, board.width / 2, 400);
+  for (const character of characters) {
+    const player = players.find(({ key }) => key === character.key);
+
+    if ((!player || player.isCPU) && highlightedPlayerKey !== character.key) {
+      ctx.globalAlpha = 0.5;
+    }
+    else ctx.globalAlpha = 1;
+
+    character.position.y = board.height / 2;
+    character.size = size;
+
+    ctx.fillStyle = character.color;
+    ctx.fillRect(character.position.x - (size / 2), board.height / 2 - (size / 2), size, size);
+    
+    ctx.fillStyle = '#000000';
+    ctx.font = "20px 'Press Start 2P'";  
+    ctx.fillText(player.username ?? 'CPU', character.position.x, character.position.y + (size), size, size);
+    ctx.font = "12px 'Press Start 2P'";  
+    ctx.fillText(player.name, character.position.x, character.position.y + size + 30, size, size);
+
+    if (showScores) {
+      ctx.font = "10px 'Press Start 2P'";
+      ctx.fillText(player.score, character.position.x, character.position.y + size + 60, size, size);
+    }
+    
+  }
+  ctx.globalAlpha = 1;
+};
+
+const drawGameOverScreen = ({ ctx, board, players }) => {
+  ctx.clearRect(0, 0, board.width, board.height);
+
+  ctx.fillStyle = '#000000';
+  ctx.textAlign = 'center';
+  ctx.font = "40px 'Press Start 2P'";
+  ctx.fillText('Game Over', board.width / 2, 400);
+  drawCharacterSelection({ ctx, board, players, showScores: true, titleText: 'Game Over' });
+};
 
 export {
   drawItems,
   drawFlashingItems,
   drawPlayers,
-  drawTextElements
+  drawTextElements,
+  drawCharacterSelection,
+  drawGameOverScreen
 };
