@@ -26,12 +26,16 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      
+      - name: Get app version
+        run: |
+          echo "APP_VERSION=$(jq -r .version package.json)" >> $GITHUB_ENV
 
       - name: Login to DockerHub
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: "caloverflow/pacman-overflow:${{ jq -r .version package.json }}"
+          tags: "caloverflow/pacman-overflow:${{ env.APP_VERSION }}"
 
   deploy:
     needs: build
