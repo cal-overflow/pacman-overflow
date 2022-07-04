@@ -67,7 +67,8 @@ jobs:
           echo $EC2_IP_ADDRESS
 
           ssh -i $KEY_FILE -o "StrictHostKeyChecking no" ubuntu@$EC2_IP_ADDRESS '
-          echo "Connected"
+          echo "Success!" >> test.txt
+
           # TODO: Pull latest docker image and run it
           '
           echo "ssh completed successfully"
