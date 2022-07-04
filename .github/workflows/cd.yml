@@ -16,6 +16,7 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: pacman-overflow
     steps:
       - name: Checkout repo
         uses: actions/checkout@master
