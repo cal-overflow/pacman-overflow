@@ -31,7 +31,7 @@ jobs:
 
       - name: Set Image tag
         run: |
-          echo "DOCKER_IMAGE=caloverflow/pacman-overflow:$(jq -r .version package.json)" >> $GITHUB_ENV"
+          echo "DOCKER_IMAGE=caloverflow/pacman-overflow:$(jq -r .version package.json)" >> $GITHUB_ENV
 
       - name: Build and push image
         uses: docker/build-push-action@v3
