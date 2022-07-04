@@ -38,7 +38,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: "${{ env.DOCKER_IMAGE }}"
+          tags: ${{ steps.set-image-tag.DOCKER_IMAGE }}
 
   deploy:
     needs: build
