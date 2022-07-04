@@ -55,7 +55,7 @@ jobs:
 
       - name: Deploy ${{ env.STACK_NAME }} stack
         run: |
-          sam deploy --stack-name $STACK_NAME --region $REGION --parameter-overrides KeyPair="$KEY_PAIR"
+          sam deploy --stack-name $STACK_NAME --region $REGION --parameter-overrides KeyPair="$KEY_PAIR" --no-fail-on-empty-changeset
       
       - name: Connect (SSH) to EC2 Instance
         run: |
