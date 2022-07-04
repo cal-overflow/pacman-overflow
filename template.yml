@@ -31,6 +31,11 @@ Resources:
         # put your script here
         echo "Hello, World" > test.txt
 
+  ElasticIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      InstanceId: !Ref EC2Instance
+
 # Outputs:
 #   KeyPairId:
 #     Description: ID of SSH KeyPair parameter
