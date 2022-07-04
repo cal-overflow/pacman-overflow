@@ -16,28 +16,28 @@ env:
   KEY_PAIR: pacman-overflow-gh-action
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    environment: pacman-overflow
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@master
+  # build:
+  #   runs-on: ubuntu-latest
+  #   environment: pacman-overflow
+  #   steps:
+  #     - name: Checkout repo
+  #       uses: actions/checkout@master
 
-      - name: Login to DockerHub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+  #     - name: Login to DockerHub
+  #       uses: docker/login-action@v2
+  #       with:
+  #         username: ${{ secrets.DOCKERHUB_USERNAME }}
+  #         password: ${{ secrets.DOCKERHUB_TOKEN }}
       
-      - name: Get app version
-        run: |
-          echo "APP_VERSION=$(jq -r .version package.json)" >> $GITHUB_ENV
+  #     - name: Get app version
+  #       run: |
+  #         echo "APP_VERSION=$(jq -r .version package.json)" >> $GITHUB_ENV
 
-      - name: Build and push image
-        uses: docker/build-push-action@v3
-        with:
-          push: true
-          tags: "caloverflow/pacman-overflow:${{ env.APP_VERSION }}"
+  #     - name: Build and push image
+  #       uses: docker/build-push-action@v3
+  #       with:
+  #         push: true
+  #         tags: "caloverflow/pacman-overflow:${{ env.APP_VERSION }}"
 
   deploy:
     needs: build
@@ -53,6 +53,6 @@ jobs:
           role-to-assume: ${{ secrets.IAM_ROLE_ARN }}
           aws-region: ${{ env.REGION }}
 
-      - name: Deploy $STACK_NAME stack
+      - name: "Deploy $STACK_NAME stack"
         run: |
           sam deploy --stack-name $STACK_NAME --region $REGION --parameter-overrides KeyPair="$KEY_PAIR"
