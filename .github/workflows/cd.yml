@@ -67,7 +67,9 @@ jobs:
           echo $EC2_IP_ADDRESS
 
           ssh -i $KEY_FILE -o "StrictHostKeyChecking no" ubuntu@$EC2_IP_ADDRESS '
+          echo "running docker pull ${{ env.DOCKER_IMAGE }}"
           docker pull ${{ env.DOCKER_IMAGE }}
+
           # docker run -p 3000:3000 ${{ env.DOCKER_IMAGE }}
           '
           echo "ssh completed successfully"
