@@ -5,8 +5,7 @@ Resources:
   KeyPair:
     Type: AWS::EC2::KeyPair
     Properties:
-      KeyName: pacman-ec2-key-pair
-
+      KeyName: pacman-overflow-ec2-key-pair
 
   EC2Instance:
     Type: AWS::EC2::Instance
