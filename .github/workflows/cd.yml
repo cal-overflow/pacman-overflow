@@ -60,7 +60,6 @@ jobs:
       - name: Connect (SSH) to EC2 Instance
         run: |
           ls
-          echo ${{}}
           echo ${{ secrets.SSH_PRIVATE_KEY }} > ${{ env.KEY_FILE }} > /dev/null
           ls
           echo "Secret in ${{ env.KEY_FILE }}"
