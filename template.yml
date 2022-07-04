@@ -5,13 +5,14 @@ Resources:
   KeyPair:
     Type: AWS::EC2::KeyPair
     Properties:
-      KeyName: EC2KeyPair
+      KeyName: pacman-ec2-key-pair
 
 
   EC2Instance:
     Type: AWS::EC2::Instance
     Properties:
-      KeyName: EC2KeyPair
+      Name: pacman-ec2-instance
+      KeyName: !Ref KeyPair
       ImageId: ami-0059b7cd9f67d8050 # TODO: look more into this
       InstanceType: m1.small
       Monitoring: true
