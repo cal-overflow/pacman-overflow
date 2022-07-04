@@ -40,7 +40,7 @@ jobs:
   #         tags: "caloverflow/pacman-overflow:${{ env.APP_VERSION }}"
 
   deploy:
-    needs: build
+    # needs: build
     environment: pacman-overflow
     runs-on: ubuntu-latest
     steps:
