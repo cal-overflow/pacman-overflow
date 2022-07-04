@@ -36,7 +36,7 @@ Resources:
     Properties:
       InstanceId: !Ref EC2Instance
 
-# Outputs:
-#   KeyPairId:
-#     Description: ID of SSH KeyPair parameter
-#     Value: !GetAtt  KeyPair.KeyPairId
+Outputs:
+  IPAddress:
+    Description: Elastic IP Address associated with EC2 Instance
+    Value: !Ref ElasticIP
