@@ -59,11 +59,11 @@ jobs:
       
       - name: Connect (SSH) to EC2 Instance
         run: |
-          SSH_KEY_FILE=${{ env.KEY_PAIR }}.pem
-          echo ${{ secrets.SSH_PRIVATE_KEY }} >> $SSH_KEY_FILE
+          KEY_FILE=${{ env.KEY_PAIR }}.pem
+          echo ${{ secrets.SSH_PRIVATE_KEY }} >> $KEY_FILE
           EC2_IP_ADDRESS=$(aws describe-stacks --stack-name $STACK_NAME --region $REGION --query Stacks[0].Outputs[?OutputKey==`IPAddress`].OutputValue' --output text)
 
-          ssh -i $SSH_KEY_FILE ubuntu@$EC2_IP_ADDRESS '
+          ssh -i $KEY_FILE ubuntu@$EC2_IP_ADDRESS '
           echo "Connected"
           # TODO: Pull latest docker image and run it
           '
