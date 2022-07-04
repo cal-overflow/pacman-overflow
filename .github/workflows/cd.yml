@@ -55,11 +55,11 @@ jobs:
 
       - name: Deploy ${{ env.STACK_NAME }} stack
         run: |
-          sam deploy --stack-name $STACK_NAME --region $REGION --parameter-overrides KeyPair="$KEY_PAIR" --no-fail-on-empty-changeset
+          sam deploy --stack-name $STACK_NAME --region $REGION --parameter-overrides KeyPair=$KEY_PAIR --no-fail-on-empty-changeset
       
       - name: Connect (SSH) to EC2 Instance
         run: |
-          SSH_KEY_FILE="${KEY_PAIR}.pem"
+          SSH_KEY_FILE=${{ env.KEY_PAIR }}.pem
           echo ${{ secrets.SSH_PRIVATE_KEY }} >> $SSH_KEY_FILE
           EC2_IP_ADDRESS=$(aws describe-stacks --stack-name $STACK_NAME --region $REGION --query Stacks[0].Outputs[?OutputKey==`IPAddress`].OutputValue' --output text)
 
