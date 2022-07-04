@@ -14,20 +14,9 @@ env:
   STACK_NAME: pacman-overflow
   KEY_PAIR: pacman-overflow-gh-action
   KEY_FILE: pacman-overflow-gh-action.dem
+
 jobs:
-  configure-environment:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@master
-
-      - name: Configure Environment Variables
-        run: |
-          echo "APP_VERSION=$(jq -r .version package.json)" >> $GITHUB_ENV
-          echo "DOCKER_IMAGE=caloverflow/pacman-overflow:${{ env.APP_VERSION }}" >> $GITHUB_ENV"
-
   build:
-    needs: configure-environment
     runs-on: ubuntu-latest
     environment: pacman-overflow
     steps:
@@ -39,6 +28,10 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Set Image tag
+        run: |
+          echo "DOCKER_IMAGE=caloverflow/pacman-overflow:$(jq -r .version package.json)" >> $GITHUB_ENV"
 
       - name: Build and push image
         uses: docker/build-push-action@v3
