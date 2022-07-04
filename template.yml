@@ -1,22 +1,37 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: "Pac-Man Overflow stack"
 
-Resources:
+Parameters:
   KeyPair:
-    Type: AWS::EC2::KeyPair
+    Description: Private SSH KeyPair
+    Type: AWS::EC2::KeyPair::KeyName
+
+Resources:
+  SSHSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
     Properties:
-      KeyName: pacman-overflow-ec2-key-pair
+      GroupDescription: Enable SSH access via port 22
+      SecurityGroupIngress:
+        - CidrIp: 0.0.0.0/0
+          FromPort: 22
+          IpProtocol: tcp
+          ToPort: 22
 
   EC2Instance:
     Type: AWS::EC2::Instance
     Properties:
       KeyName: !Ref KeyPair
-      ImageId: ami-0059b7cd9f67d8050 # TODO: look more into this
-      InstanceType: m1.small
+      ImageId: ami-0b0ea68c435eb488d
+      InstanceType: t2.micro
       Monitoring: true
-      # SecurityGroupIds:
-      #   - sg-id
+      SecurityGroups:
+        - !Ref SSHSecurityGroup
       UserData: !Base64 |
         #!/bin/bash -ex
         # put your script here
         echo "Hello, World" > test.txt
+
+# Outputs:
+#   KeyPairId:
+#     Description: ID of SSH KeyPair parameter
+#     Value: !GetAtt  KeyPair.KeyPairId

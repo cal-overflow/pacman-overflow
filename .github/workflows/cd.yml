@@ -12,6 +12,8 @@ permissions:
 
 env:
   REGION: us-east-1
+  STACK_NAME: pacman-overflow
+  KEY_PAIR: pacman-overflow-gh-action
 
 jobs:
   build:
@@ -31,7 +33,7 @@ jobs:
         run: |
           echo "APP_VERSION=$(jq -r .version package.json)" >> $GITHUB_ENV
 
-      - name: Login to DockerHub
+      - name: Build and push image
         uses: docker/build-push-action@v3
         with:
           push: true
@@ -51,11 +53,6 @@ jobs:
           role-to-assume: ${{ secrets.IAM_ROLE_ARN }}
           aws-region: ${{ env.REGION }}
 
-      - name: Deploy cloudformation stack
+      - name: Deploy $STACK_NAME stack
         run: |
-          sam deploy --stack-name "pacman-overflow" --region $REGION
-      
-      - name: "Retrieve ssh key - Dev purposes only"
-        run: |
-          aws --region=$REGION ssm get-parameter --name $KEY_PAIR_PARAMETER_ID
-      
+          sam deploy --stack-name $STACK_NAME --region $REGION --parameter-overrides KeyPair="$KEY_PAIR"
