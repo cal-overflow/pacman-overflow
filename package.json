@@ -4,8 +4,8 @@
   "description": "Multiplayer pacman game. More information coming soon.",
   "main": "src/backend/Server.js",
   "scripts": {
-    "dev": "nodemon backend/Server.js & npm run tailwind:dev & wait",
-    "start": "node backend/Server.js",
+    "dev": "nodemon src/backend/Server.js & npm run tailwind:dev & wait",
+    "start": "node src/backend/Server.js",
     "test": "jest",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
