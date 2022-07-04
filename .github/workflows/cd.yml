@@ -61,7 +61,7 @@ jobs:
       - name: Connect (SSH) to EC2 Instance
         run: |
           ls
-          echo ${{ secrets.SSH_PRIVATE_KEY }} > ${{ env.KEY_FILE }}
+          echo ${{ secrets.SSH_PRIVATE_KEY }} > ${{ env.KEY_FILE }} > /dev/null
           ls
           echo "Secret in ${{ env.KEY_FILE }}"
           EC2_IP_ADDRESS=$(aws describe-stacks --stack-name $STACK_NAME --region $REGION --query Stacks[0].Outputs[?OutputKey==`IPAddress`].OutputValue' --output text)
