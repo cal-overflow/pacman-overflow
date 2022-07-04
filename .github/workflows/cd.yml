@@ -14,33 +14,40 @@ env:
   STACK_NAME: pacman-overflow
   KEY_PAIR: pacman-overflow-gh-action
   KEY_FILE: pacman-overflow-gh-action.dem
-
 jobs:
-  # build:
-  #   runs-on: ubuntu-latest
-  #   environment: pacman-overflow
-  #   steps:
-  #     - name: Checkout repo
-  #       uses: actions/checkout@master
+  configure-environment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@master
 
-  #     - name: Login to DockerHub
-  #       uses: docker/login-action@v2
-  #       with:
-  #         username: ${{ secrets.DOCKERHUB_USERNAME }}
-  #         password: ${{ secrets.DOCKERHUB_TOKEN }}
-      
-  #     - name: Get app version
-  #       run: |
-  #         echo "APP_VERSION=$(jq -r .version package.json)" >> $GITHUB_ENV
+      - name: Configure Environment Variables
+        run: |
+          echo "APP_VERSION=$(jq -r .version package.json)" >> $GITHUB_ENV
+          echo "DOCKER_IMAGE=caloverflow/pacman-overflow:${{ env.APP_VERSION }}" >> $GITHUB_ENV"
 
-  #     - name: Build and push image
-  #       uses: docker/build-push-action@v3
-  #       with:
-  #         push: true
-  #         tags: "caloverflow/pacman-overflow:${{ env.APP_VERSION }}"
+  build:
+    needs: configure-environment
+    runs-on: ubuntu-latest
+    environment: pacman-overflow
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@master
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push image
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          tags: "${{ env.DOCKER_IMAGE }}"
 
   deploy:
-    # needs: build
+    needs: build
     environment: pacman-overflow
     runs-on: ubuntu-latest
     steps:
@@ -67,8 +74,7 @@ jobs:
           echo $EC2_IP_ADDRESS
 
           ssh -i $KEY_FILE -o "StrictHostKeyChecking no" ubuntu@$EC2_IP_ADDRESS '
-          echo "Success!" >> test.txt
-
-          # TODO: Pull latest docker image and run it
+          docker pull ${{ env.DOCKER_IMAGE }}
+          # docker run -p 3000:3000 ${{ env.DOCKER_IMAGE }}
           '
           echo "ssh completed successfully"

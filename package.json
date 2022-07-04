@@ -1,22 +1,21 @@
 {
-  "name": "multiplayer-pacman",
+  "name": "pacman-overflow",
   "version": "0.0.1",
   "description": "Multiplayer pacman game. More information coming soon.",
   "main": "src/backend/Server.js",
   "scripts": {
     "dev": "nodemon src/backend/Server.js & npm run tailwind:dev & wait",
-    "start": "node src/backend/Server.js",
+    "start": "node src/backend/Server.js & npm run tailwind & wait",
     "test": "jest",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "tailwind": "npx tailwindcss -c ./tailwind.config.cjs -i ./src/frontend/main.css -o ./src/frontend/styles.css",
     "tailwind:dev": "npx tailwindcss -c ./tailwind.config.cjs -i ./src/frontend/main.css -o ./src/frontend/styles.css --watch",
-    "tailwind:prod": "npx tailwindcss -c ./tailwind.config.cjs -i ./src/frontend/main.css -o ./src/frontend/styles.css --minify",
+    "tailwind": "npx tailwindcss -c ./tailwind.config.cjs -i ./src/frontend/main.css -o ./src/frontend/styles.css --minify",
     "prepare": "husky install"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ChristianLisle/multiplayer-pacman.git"
+    "url": "git+https://github.com/cal-overflow/pacman-overflow.git"
   },
   "keywords": [
     "PacMan",
@@ -26,12 +25,12 @@
     "multiplayer",
     "multi-player"
   ],
-  "author": "Christian Lisle",
+  "author": "cal-overflow",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/ChristianLisle/multiplayer-pacman/issues"
+    "url": "https://github.com/cal-overflow/pacman-overflow/issues"
   },
-  "homepage": "https://github.com/ChristianLisle/multiplayer-pacman#readme",
+  "homepage": "https://github.com/cal-overflow/pacman-overflow#readme",
   "devDependencies": {
     "@babel/core": "^7.17.8",
     "@babel/preset-env": "^7.16.11",
