@@ -59,6 +59,7 @@ jobs:
       
       - name: Connect (SSH) to EC2 Instance
         run: |
+          echo "Docker Image: ${{ env.DOCKER_IMAGE }}"
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ${{ env.KEY_FILE }}
           chmod 600 ${{ env.KEY_FILE }}
           echo "Secret in ${{ env.KEY_FILE }}"
@@ -66,10 +67,10 @@ jobs:
           EC2_IP_ADDRESS=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --region $REGION --query 'Stacks[0].Outputs[?OutputKey==`IPAddress`].OutputValue' --output text)
           echo $EC2_IP_ADDRESS
 
-          ssh -i $KEY_FILE -o "StrictHostKeyChecking no" ubuntu@$EC2_IP_ADDRESS '
-          echo "running docker pull ${{ env.DOCKER_IMAGE }}"
+          ssh -i $KEY_FILE -o "StrictHostKeyChecking no" ubuntu@$EC2_IP_ADDRESS "
+          echo \"running docker pull ${{ env.DOCKER_IMAGE }}\"
           docker pull ${{ env.DOCKER_IMAGE }}
 
           # docker run -p 3000:3000 ${{ env.DOCKER_IMAGE }}
-          '
+          "
           echo "ssh completed successfully"
