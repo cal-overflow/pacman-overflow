@@ -14,7 +14,26 @@ env:
   REGION: us-east-1
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@master
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Login to DockerHub
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          tags: "caloverflow/pacman-overflow:$(jq -r .version package.json)"
+
   deploy:
+    needs: build
     environment: pacman-overflow
     runs-on: ubuntu-latest
     steps:
@@ -27,7 +46,11 @@ jobs:
           role-to-assume: ${{ secrets.IAM_ROLE_ARN }}
           aws-region: ${{ env.REGION }}
 
-      - name: Deploy cloudformation stack
-        run: |
-          sam deploy --stack-name "pacman-overflow" --region $REGION
+      # - name: Deploy cloudformation stack
+      #   run: |
+      #     sam deploy --stack-name "pacman-overflow" --region $REGION
+      
+      # - name: "Retrieve ssh key - Dev purposes only"
+      #   run: |
+      #     aws --region=$REGION ssm get-parameter --name $KEY_PAIR_PARAMETER_ID
       
