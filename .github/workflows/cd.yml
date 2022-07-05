@@ -19,6 +19,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     environment: pacman-overflow
+    outputs:
+      DOCKER_IMAGE: ${{ steps.get_image_tag.outputs.DOCKER_IMAGE }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@master
@@ -60,7 +62,7 @@ jobs:
       
       - name: Deploy to EC2 Instance
         env:
-          DOCKER_IMAGE: ${{ steps.get_image_tag.outputs.DOCKER_IMAGE }}
+          DOCKER_IMAGE: ${{ needs.build.outputs.DOCKER_IMAGE }}
         run: |
           echo "Docker Image: ${{ env.DOCKER_IMAGE }}"
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ${{ env.KEY_FILE }}
