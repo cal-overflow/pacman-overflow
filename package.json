@@ -1,7 +1,7 @@
 {
   "name": "pacman-overflow",
   "version": "0.0.1",
-  "description": "Multiplayer pacman game. More information coming soon.",
+  "description": "Multiplayer Pac-Man game.",
   "main": "src/backend/Server.js",
   "scripts": {
     "dev": "nodemon src/backend/Server.js & npm run tailwind:dev & wait",
