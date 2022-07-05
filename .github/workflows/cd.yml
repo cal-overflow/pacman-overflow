@@ -74,7 +74,7 @@ jobs:
 
           # Kill previous container
           docker container ps -q # TODO: delete
-          docker kill $(docker container ps -q)
+          docker kill \$(docker container ps -q)
 
           docker run -d -p 80:3000 --restart=on-failure ${{ env.DOCKER_IMAGE }}
           "
