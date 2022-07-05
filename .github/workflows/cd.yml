@@ -60,22 +60,18 @@ jobs:
         run: |
           sam deploy --stack-name $STACK_NAME --region $REGION --parameter-overrides KeyPair=$KEY_PAIR --no-fail-on-empty-changeset
       
-      - name: Deploy to EC2 Instance
+      - name: SSH and Run Container
         env:
           DOCKER_IMAGE: ${{ needs.build.outputs.DOCKER_IMAGE }}
         run: |
-          echo "Docker Image: ${{ env.DOCKER_IMAGE }}"
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ${{ env.KEY_FILE }}
           chmod 600 ${{ env.KEY_FILE }}
-          echo "Secret in ${{ env.KEY_FILE }}"
 
           EC2_IP_ADDRESS=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --region $REGION --query 'Stacks[0].Outputs[?OutputKey==`IPAddress`].OutputValue' --output text)
-          echo $EC2_IP_ADDRESS
+          echo $EC2_IP_ADDRESS # TODO: delete
 
           ssh -i $KEY_FILE -o "StrictHostKeyChecking no" ubuntu@$EC2_IP_ADDRESS "
-          echo \"running docker pull ${{ env.DOCKER_IMAGE }}\"
           docker pull ${{ env.DOCKER_IMAGE }}
 
-          # docker run -p 3000:3000 ${{ env.DOCKER_IMAGE }}
+          docker run -d -p 80:3000 ${{ env.DOCKER_IMAGE }}
           "
-          echo "ssh completed successfully"
