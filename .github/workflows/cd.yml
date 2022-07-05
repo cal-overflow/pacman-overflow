@@ -26,11 +26,11 @@ jobs:
       - name: Login to DockerHub
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          username: caloverflow
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Set Image tag
-        id: set-image-tag
+      - name: Get Image tag
+        id: get_image_tag
         run: |
           echo "::set-output name=DOCKER_IMAGE::caloverflow/pacman-overflow:$(jq -r .version package.json)"
 
@@ -38,7 +38,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: ${{ steps.set-image-tag.DOCKER_IMAGE }}
+          tags: "${{ steps.get_image_tag.DOCKER_IMAGE }}"
 
   deploy:
     needs: build
@@ -60,7 +60,7 @@ jobs:
       
       - name: Deploy to EC2 Instance
         env:
-          DOCKER_IMAGE: ${{ steps.set-image-tag.DOCKER_IMAGE }}
+          DOCKER_IMAGE: ${{ steps.get_image_tag.DOCKER_IMAGE }}
         run: |
           echo "Docker Image: ${{ env.DOCKER_IMAGE }}"
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ${{ env.KEY_FILE }}
