@@ -73,7 +73,6 @@ jobs:
           docker pull ${{ env.DOCKER_IMAGE }}
 
           # Kill previous container
-          docker container ps -q # TODO: delete
           docker kill \$(docker container ps -q)
 
           docker run -d -p 80:3000 --restart=unless-stopped ${{ env.DOCKER_IMAGE }}
