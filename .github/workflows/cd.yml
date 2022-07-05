@@ -60,7 +60,7 @@ jobs:
         run: |
           sam deploy --stack-name $STACK_NAME --region $REGION --parameter-overrides KeyPair=$KEY_PAIR --no-fail-on-empty-changeset
       
-      - name: SSH and Run Container
+      - name: Start docker container on EC2
         env:
           DOCKER_IMAGE: ${{ needs.build.outputs.DOCKER_IMAGE }}
         run: |
@@ -68,7 +68,6 @@ jobs:
           chmod 600 ${{ env.KEY_FILE }}
 
           EC2_IP_ADDRESS=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --region $REGION --query 'Stacks[0].Outputs[?OutputKey==`IPAddress`].OutputValue' --output text)
-          echo $EC2_IP_ADDRESS # TODO: delete
 
           ssh -i $KEY_FILE -o "StrictHostKeyChecking no" ubuntu@$EC2_IP_ADDRESS "
           docker pull ${{ env.DOCKER_IMAGE }}
