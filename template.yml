@@ -20,16 +20,16 @@ Resources:
   HTTPTrafficSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Enable access to Express app via HTTP and HTTPS ports
+      GroupDescription: Enable incoming HTTP and HTTPS access
       SecurityGroupIngress:
         - CidrIp: 0.0.0.0/0
           FromPort: 80
           IpProtocol: tcp
-          ToPort: 3000
+          ToPort: 80
         - CidrIp: 0.0.0.0/0
           FromPort: 443
           IpProtocol: tcp
-          ToPort: 3000
+          ToPort: 443
 
   EC2Instance:
     Type: AWS::EC2::Instance
