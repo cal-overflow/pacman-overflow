@@ -16,6 +16,20 @@ Resources:
           FromPort: 22
           IpProtocol: tcp
           ToPort: 22
+  
+  HTTPTrafficSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable access to Express app via HTTP and HTTPS ports
+      SecurityGroupIngress:
+        - CidrIp: 0.0.0.0/0
+          FromPort: 80
+          IpProtocol: tcp
+          ToPort: 3000
+        - CidrIp: 0.0.0.0/0
+          FromPort: 443
+          IpProtocol: tcp
+          ToPort: 3000
 
   EC2Instance:
     Type: AWS::EC2::Instance
@@ -26,10 +40,15 @@ Resources:
       Monitoring: true
       SecurityGroups:
         - !Ref SSHSecurityGroup
+        - !Ref HTTPTrafficSecurityGroup
       UserData: !Base64 |
         #!/bin/bash -ex
-        # put your script here
-        echo "Hello, World" > test.txt
+
+        sudo apt-get update
+        sudo apt upgrade -y
+        sudo apt install docker.io -y
+
+        sudo chmod 666 /var/run/docker.sock
 
   ElasticIP:
     Type: AWS::EC2::EIP
