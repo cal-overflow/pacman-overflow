@@ -72,5 +72,8 @@ jobs:
           ssh -i $KEY_FILE -o "StrictHostKeyChecking no" ubuntu@$EC2_IP_ADDRESS "
           docker pull ${{ env.DOCKER_IMAGE }}
 
-          docker run -d -p 80:3000 ${{ env.DOCKER_IMAGE }}
+          # Kill previous container
+          docker kill $(docker container ps -q)
+
+          docker run -d -p 80:3000 --restart=on-failure ${{ env.DOCKER_IMAGE }}
           "
