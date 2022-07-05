@@ -38,7 +38,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: "${{ steps.get_image_tag.DOCKER_IMAGE }}"
+          tags: "${{ steps.get_image_tag.outputs.DOCKER_IMAGE }}"
 
   deploy:
     needs: build
@@ -60,7 +60,7 @@ jobs:
       
       - name: Deploy to EC2 Instance
         env:
-          DOCKER_IMAGE: ${{ steps.get_image_tag.DOCKER_IMAGE }}
+          DOCKER_IMAGE: ${{ steps.get_image_tag.outputs.DOCKER_IMAGE }}
         run: |
           echo "Docker Image: ${{ env.DOCKER_IMAGE }}"
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ${{ env.KEY_FILE }}
