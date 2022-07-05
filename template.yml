@@ -63,6 +63,7 @@ Resources:
         - !Ref ElasticIP
       TTL: 900
       Type: A
+      HostedZoneName: pacman-overflow.com.
 
 Outputs:
   IPAddress:
