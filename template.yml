@@ -55,6 +55,15 @@ Resources:
     Properties:
       InstanceId: !Ref EC2Instance
 
+  DNSRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      Name: pacman-overflow.com
+      ResourceRecords:
+        - !Ref ElasticIP
+      TTL: 900
+      Type: A
+
 Outputs:
   IPAddress:
     Description: Elastic IP Address associated with EC2 Instance
