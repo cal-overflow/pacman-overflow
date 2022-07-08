@@ -1,10 +1,9 @@
 name: cd
 
-# TODO: change this 
 on:
   push:
     branches:
-      - ci-cd
+      - master
 
 permissions:
   id-token: write
