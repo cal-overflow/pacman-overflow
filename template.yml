@@ -1,0 +1,71 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: "Pac-Man Overflow stack"
+
+Parameters:
+  KeyPair:
+    Description: Private SSH KeyPair
+    Type: AWS::EC2::KeyPair::KeyName
+
+Resources:
+  SSHSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable SSH access via port 22
+      SecurityGroupIngress:
+        - CidrIp: 0.0.0.0/0
+          FromPort: 22
+          IpProtocol: tcp
+          ToPort: 22
+  
+  HTTPTrafficSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable incoming HTTP and HTTPS access
+      SecurityGroupIngress:
+        - CidrIp: 0.0.0.0/0
+          FromPort: 80
+          IpProtocol: tcp
+          ToPort: 80
+        - CidrIp: 0.0.0.0/0
+          FromPort: 443
+          IpProtocol: tcp
+          ToPort: 443
+
+  EC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      KeyName: !Ref KeyPair
+      ImageId: ami-0b0ea68c435eb488d
+      InstanceType: t3.micro
+      Monitoring: true
+      SecurityGroups:
+        - !Ref SSHSecurityGroup
+        - !Ref HTTPTrafficSecurityGroup
+      UserData: !Base64 |
+        #!/bin/bash -ex
+
+        sudo apt-get update
+        sudo apt upgrade -y
+        sudo apt install docker.io -y
+
+        sudo chmod 666 /var/run/docker.sock
+
+  ElasticIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      InstanceId: !Ref EC2Instance
+
+  DNSRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      Name: pacman-overflow.com
+      ResourceRecords:
+        - !Ref ElasticIP
+      TTL: 900
+      Type: A
+      HostedZoneName: pacman-overflow.com.
+
+Outputs:
+  IPAddress:
+    Description: Elastic IP Address associated with EC2 Instance
+    Value: !Ref ElasticIP

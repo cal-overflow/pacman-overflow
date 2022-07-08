@@ -1,0 +1,78 @@
+name: cd
+
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  id-token: write
+
+env:
+  REGION: us-east-1
+  STACK_NAME: pacman-overflow
+  KEY_PAIR: pacman-overflow-gh-action
+  KEY_FILE: pacman-overflow-gh-action.dem
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: pacman-overflow
+    outputs:
+      DOCKER_IMAGE: ${{ steps.get_image_tag.outputs.DOCKER_IMAGE }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@master
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: caloverflow
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Get Image tag
+        id: get_image_tag
+        run: |
+          echo "::set-output name=DOCKER_IMAGE::caloverflow/pacman-overflow:$(jq -r .version package.json)"
+
+      - name: Build and push image
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          tags: "${{ steps.get_image_tag.outputs.DOCKER_IMAGE }}"
+
+  deploy:
+    needs: build
+    environment: pacman-overflow
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@master
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.IAM_ROLE_ARN }}
+          aws-region: ${{ env.REGION }}
+
+      - name: Deploy ${{ env.STACK_NAME }} stack
+        run: |
+          sam deploy --stack-name $STACK_NAME --region $REGION --parameter-overrides KeyPair=$KEY_PAIR --no-fail-on-empty-changeset
+      
+      - name: Start docker container on EC2
+        env:
+          DOCKER_IMAGE: ${{ needs.build.outputs.DOCKER_IMAGE }}
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ${{ env.KEY_FILE }}
+          chmod 600 ${{ env.KEY_FILE }}
+
+          EC2_IP_ADDRESS=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --region $REGION --query 'Stacks[0].Outputs[?OutputKey==`IPAddress`].OutputValue' --output text)
+
+          ssh -i $KEY_FILE -o "StrictHostKeyChecking no" ubuntu@$EC2_IP_ADDRESS "
+          docker pull ${{ env.DOCKER_IMAGE }}
+
+          # Kill previous container
+          docker kill \$(docker container ps -q)
+
+          docker run -d -p 80:3000 --restart=unless-stopped ${{ env.DOCKER_IMAGE }}
+          "

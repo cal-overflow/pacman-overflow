@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Multiplayer Pac-Man</title>
+  <title>Pac-Man Overflow</title>
   <link href="styles.css" rel="stylesheet">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,7 +12,10 @@
 </head>
 <body class="flex h-screen justify-center bg-gradient-to-r from-cyan-500 to-blue-700">
   <form id="entrance-form" class="m-auto max-w-screen-md grid grid-rows-10 grid-flow-row gap-y-12 justify-center">
-    <h1 class="text-center text-4xl text-primary row-span-1">Multiplayer Pac-Man</h1>
+    <div class="text-center row-span-1">
+      <h1 class="text-4xl text-primary ">Pac-Man Overflow</h1>
+      <p class="text-xs text-white mt-2">A multiplayer Pac-Man game</p>
+    </div>
     <input type="text" maxlength="14" placeholder="Username" name="username" id="username-input" class="row-span-2 p-2 rounded max-w-sm mx-auto" />
     <input type="submit" disabled class="disabled:opacity-70 rounded-md py-1 px-2 bg-primary text-black row-span-1 w-fit mx-auto cursor-pointer disabled:cursor-default hover:drop-shadow-lg disabled:hover:drop-shadow-none" value="Play" id="play-button">
   </form>
