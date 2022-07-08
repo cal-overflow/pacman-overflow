@@ -36,7 +36,7 @@ Resources:
     Properties:
       KeyName: !Ref KeyPair
       ImageId: ami-0b0ea68c435eb488d
-      InstanceType: t2.micro
+      InstanceType: t3.micro
       Monitoring: true
       SecurityGroups:
         - !Ref SSHSecurityGroup
