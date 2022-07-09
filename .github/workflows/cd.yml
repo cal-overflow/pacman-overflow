@@ -69,10 +69,28 @@ jobs:
           EC2_IP_ADDRESS=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --region $REGION --query 'Stacks[0].Outputs[?OutputKey==`IPAddress`].OutputValue' --output text)
 
           ssh -i $KEY_FILE -o "StrictHostKeyChecking no" ubuntu@$EC2_IP_ADDRESS "
+          # install docker if it does not already exist
+          if ! [ -x "$(command -v docker)" ]; then 
+            echo "Docker does not yet exist. Updating packages"
+            echo "Updating packages"
+            sudo apt-get update
+            sudo apt-get upgrade -y
+            
+            echo "Installing docker"
+            sudo apt-get install docker.io -y
+            sudo chmod 666 /var/run/docker.sock
+
+            echo "Docker install complete"
+          fi
+
+          echo "Pulling docker image ${{ env.DOCKER_IMAGE }}"
           docker pull ${{ env.DOCKER_IMAGE }}
 
-          # Kill previous container
-          docker kill \$(docker container ps -q)
+          if docker container ps -q; then
+            echo "Killing old docker container"
+            docker kill \$(docker container ps -q)
+          fi
 
+          echo "Starting container ${{ env.DOCKER_IMAGE }}"
           docker run -d -p 80:3000 --restart=unless-stopped ${{ env.DOCKER_IMAGE }}
           "
