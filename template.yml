@@ -41,14 +41,9 @@ Resources:
       SecurityGroups:
         - !Ref SSHSecurityGroup
         - !Ref HTTPTrafficSecurityGroup
-      UserData: !Base64 |
-        #!/bin/bash -ex
-
-        sudo apt-get update
-        sudo apt upgrade -y
-        sudo apt install docker.io -y
-
-        sudo chmod 666 /var/run/docker.sock
+      Tags:
+        - Key: Name
+          Value: pacman-overflow-ec2
 
   ElasticIP:
     Type: AWS::EC2::EIP
