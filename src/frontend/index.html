@@ -26,7 +26,11 @@
       <p class="text-xs text-white mt-2">A multiplayer Pac-Man game</p>
     </div>
     <input type="text" maxlength="14" placeholder="Username" name="username" id="username-input" class="row-span-2 p-2 rounded max-w-sm mx-auto" />
-    <input type="submit" disabled class="disabled:opacity-70 rounded-md py-1 px-2 bg-primary text-black row-span-1 w-fit mx-auto cursor-pointer disabled:cursor-default hover:drop-shadow-lg disabled:hover:drop-shadow-none" value="Play" id="play-button">
+    <input type="submit" disabled class="disabled:opacity-70 rounded-md py-1 px-2 bg-primary text-black row-span-1 w-fit mx-auto cursor-pointer disabled:cursor-not-allowed hover:drop-shadow-lg disabled:hover:drop-shadow-none" value="Play" id="play-button" />
+    <div class="row-span-1 text-center" id="private-lobby-option-container">
+      <input type="checkbox" id="private-lobby-checkbox" name="private-lobby-checkbox" class="accent-primary cursor-pointer" />
+      <label for="private-lobby-checkbox" class="text-gray-200 text-xs">Create private game</label>
+    </div>
   </form>
 
   <div id="game" class="w-[896px] h-[992px] mx-auto relative hidden">
@@ -68,8 +72,14 @@
     const nameInput = document.getElementById('username-input');
     const submitBtn = document.getElementById('play-button');
     const game = document.getElementById('game');
-    
+
+    const queryParams = new URLSearchParams(window.location.search);
     const username = localStorage.getItem('username');
+
+    if (queryParams.get('lobby')) {
+      document.getElementById('private-lobby-option-container').classList.add('hidden');
+      submitBtn.setAttribute('value', 'Join');
+    }
 
     if (username) {
       nameInput.setAttribute('value', username);
