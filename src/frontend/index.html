@@ -26,7 +26,17 @@
       <p class="text-xs text-white mt-2">A multiplayer Pac-Man game</p>
     </div>
     <input type="text" maxlength="14" placeholder="Username" name="username" id="username-input" class="row-span-2 p-2 rounded max-w-sm mx-auto" />
-    <input type="submit" disabled class="disabled:opacity-70 rounded-md py-1 px-2 bg-primary text-black row-span-1 w-fit mx-auto cursor-pointer disabled:cursor-default hover:drop-shadow-lg disabled:hover:drop-shadow-none" value="Play" id="play-button">
+    <div id="default-menu" class="hidden row-span-1 text-center">
+      <input type="submit" disabled class="disabled:opacity-70 rounded-md py-1 px-2 bg-primary text-black w-32 whitespace-normal mx-auto cursor-pointer disabled:cursor-not-allowed hover:drop-shadow-lg disabled:hover:drop-shadow-none" value="Public Match" id="play-public-button" />
+      <input type="submit" disabled class="disabled:opacity-70 rounded-md py-1 px-2 bg-primary text-black w-32 whitespace-normal mx-auto cursor-pointer disabled:cursor-not-allowed hover:drop-shadow-lg disabled:hover:drop-shadow-none" value="Private Match" id="play-private-button" />
+    </div>
+    <div id="joining-lobby-menu" class="hidden row-span-1 text-center">
+      <button type="button" class="rounded-md py-1 px-2 bg-primary text-black w-32 whitespace-normal mx-auto cursor-pointer hover:drop-shadow-lg disabled:hover:drop-shadow-none" value="Exit Lobby" onclick="window.location.href = '/'">
+        Exit Match
+      </button>
+      <input type="submit" disabled class="disabled:opacity-70 rounded-md my-6 py-1 px-2 bg-primary text-black w-32 whitespace-normal mx-auto cursor-pointer disabled:cursor-not-allowed hover:drop-shadow-lg disabled:hover:drop-shadow-none" value="Join Match" id="join-match-button" />
+      <p class="text-gray-200 text-xs" id="joining-match-info">Joining a lobby by the URL</p>
+    </div>
   </form>
 
   <div id="game" class="w-[896px] h-[992px] mx-auto relative hidden">
@@ -66,29 +76,57 @@
   <script>
     const form = document.getElementById('entrance-form');
     const nameInput = document.getElementById('username-input');
-    const submitBtn = document.getElementById('play-button');
+    const publicSubmitBtn = document.getElementById('play-public-button');
+    const privateSubmitBtn = document.getElementById('play-private-button');
+    const joinMatchSubmitBtn = document.getElementById('join-match-button');
     const game = document.getElementById('game');
-    
+    const queryParams = new URLSearchParams(window.location.search);
     const username = localStorage.getItem('username');
+    const lobby = queryParams.get('lobby');
+    let isCreatingPrivateLobby;
+
+    if (lobby) {
+      document.getElementById('joining-lobby-menu').classList.remove('hidden');
+      if (lobby.includes('private')) {
+        document.getElementById('joining-match-info').innerHTML = 'Joining a Private Match by the URL';
+      }
+      else {
+        document.getElementById('joining-match-info').innerHTML = 'Joining a Public Match by the URL';
+      }
+    }
+    else {
+      document.getElementById('default-menu').classList.remove('hidden');
+    }
 
     if (username) {
       nameInput.setAttribute('value', username);
-      submitBtn.removeAttribute('disabled');
+      publicSubmitBtn.removeAttribute('disabled');
+      privateSubmitBtn.removeAttribute('disabled');
+      joinMatchSubmitBtn.removeAttribute('disabled');
     }
-
+    
     nameInput.addEventListener('input', (event) => {
       if (nameInput.value) {
-        submitBtn.removeAttribute('disabled');
+        publicSubmitBtn.removeAttribute('disabled');
+        privateSubmitBtn.removeAttribute('disabled');
+        joinMatchSubmitBtn.removeAttribute('disabled');
       }
       else {
-        submitBtn.setAttribute('disabled', undefined);
+        publicSubmitBtn.setAttribute('disabled', undefined);
+        privateSubmitBtn.setAttribute('disabled', undefined);
+        joinMatchSubmitBtn.setAttribute('disabled', undefined);
       }
+    });
+
+    privateSubmitBtn.addEventListener('mousedown', () => {
+      isCreatingPrivateLobby = true;
     });
 
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
 
       localStorage.setItem('username', document.getElementById('username-input').value);
+      localStorage.setItem('isCreatingPrivateLobby', isCreatingPrivateLobby);
 
       form.classList.add('hidden');
       game.classList.remove('hidden');

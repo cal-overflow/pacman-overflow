@@ -41,35 +41,41 @@ io.on('connection', (socket) => {
     socket.emit('lobbies', (io.sockets.adapter.rooms));
   });
 
-  socket.on('joinLobby', ({ username, lobby }) => {
+  socket.on('joinLobby', ({ username, lobby, isCreatingPrivateLobby }) => {
     socket.username = username;
 
-    if (!lobby) {
+    if (!lobby && !isCreatingPrivateLobby) {
       for (const lobbyName in lobbies) {
-        if (lobbies[lobbyName].sockets.length < 5) {
+        const currentLobby = lobbies[lobbyName];
+        if (currentLobby.sockets.length < 5 && !currentLobby.isPrivate) {
           socket.join(lobbyName);
           socket.lobby = lobbyName;
-          lobbies[lobbyName].sockets.push(socket);
+          currentLobby.sockets.push(socket);
           break;
         }
       }
 
       if (!socket.lobby) {
-        const newLobby = chance.guid();
-        socket.join(newLobby);
-        socket.lobby = newLobby;
-        lobbies[newLobby] = {
+        const lobby = chance.guid();
+        socket.join(lobby);
+        socket.lobby = lobby;
+        lobbies[lobby] = {
           sockets: [socket]
         };
       }
     }
     else {
+      if (isCreatingPrivateLobby) {
+        lobby = `private-${chance.guid()}`;
+      }
+
       socket.join(lobby);
       socket.lobby = lobby;
 
       if (!lobbies[lobby]) {
         lobbies[lobby] = {
-          sockets: [socket]
+          sockets: [socket],
+          isPrivate: isCreatingPrivateLobby
         };
       }
     }

@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import {
   drawItems,
   drawFlashingItems,
@@ -8,7 +9,7 @@ import {
 } from './Drawer.js';
 import Characters from './assets/Characters.js';
 
-const queryParams = new URLSearchParams(window.location.search);
+
 const movementKeys = ['w', 'a', 's', 'd', 'ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'];
 const backgroundCanvas = document.getElementById('background-layer');
 const itemCtx = document.getElementById('item-layer').getContext('2d');
@@ -23,8 +24,8 @@ const board = {
   width: backgroundCanvas.width,
   height: backgroundCanvas.height
 };
-// eslint-disable-next-line no-undef
 const socket = io();
+const isCreatingPrivateLobby = localStorage.getItem('isCreatingPrivateLobby') === 'true';
 const username = localStorage.getItem('username');
 let items;
 let assignedCharacter;
@@ -76,7 +77,7 @@ const handleGameUpdate = (game) => {
   }
 };
 
-socket.emit('joinLobby', { username, lobby: lobby });
+socket.emit('joinLobby', { username, lobby: lobby, isCreatingPrivateLobby });
 
 socket.on('joinedLobby', ({ lobbyName, game }) => {
   if (!lobby) {
