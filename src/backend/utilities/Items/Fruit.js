@@ -1,3 +1,4 @@
+import Ghost from '../Players/Ghost.js';
 import Item from './Item.js';
 
 export default class Fruit extends Item {
@@ -10,7 +11,14 @@ export default class Fruit extends Item {
     });
   }
 
-  use() {
+  use(player) {
+    if (player instanceof Ghost) {
+      this.points = 2 * this.points;
+      if (player.isScared) {
+        this.points = 2 * this.points;
+      }
+    }
+    player.incrementScore(this.points);
     return true;
   }
 }

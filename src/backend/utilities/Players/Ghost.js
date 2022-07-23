@@ -2,6 +2,7 @@ import Player from './Player.js';
 import PacMan from './PacMan.js';
 
 const CHANCE_RUN_FROM_POWERED_PACMAN = 0.9;
+const CHANCE_TO_EAT_FRUIT = 0.5;
 const MAX_SECONDS_CHASE_MODE = 20;
 const MAX_SECONDS_SCATTER_MODE = 9;
 const MIN_SECONDS_PER_TRAVEL_MODE = 3;
@@ -59,6 +60,11 @@ export default class Ghost extends Player {
       const chosenPath = lairPaths[Math.floor(Math.random() * lairPaths.length)];
       
       return Math.random() < 0.5 ? chosenPath.start.position : chosenPath.end.position;
+    }
+
+    const fruit = game.items.find((item) => item.type === 'fruit');
+    if (fruit && Math.random() < CHANCE_TO_EAT_FRUIT) {
+      return fruit.position;
     }
 
     const pacman = game.players.find((player) => player instanceof PacMan);
