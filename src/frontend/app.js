@@ -9,7 +9,6 @@ import {
 } from './Drawer.js';
 import Characters from './assets/Characters.js';
 
-const isCreatingPrivateLobby = document.getElementById('private-lobby-checkbox').checked;
 
 const movementKeys = ['w', 'a', 's', 'd', 'ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'];
 const backgroundCanvas = document.getElementById('background-layer');
@@ -26,6 +25,7 @@ const board = {
   height: backgroundCanvas.height
 };
 const socket = io();
+const isCreatingPrivateLobby = localStorage.getItem('isCreatingPrivateLobby') === 'true';
 const username = localStorage.getItem('username');
 let items;
 let assignedCharacter;

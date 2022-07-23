@@ -66,7 +66,7 @@ io.on('connection', (socket) => {
     }
     else {
       if (isCreatingPrivateLobby) {
-        lobby = chance.guid();
+        lobby = `private-${chance.guid()}`;
       }
 
       socket.join(lobby);
