@@ -10,7 +10,8 @@ export default class Fruit extends Item {
     });
   }
 
-  use() {
+  use(player) {
+    player.incrementScore(this.points);
     return true;
   }
 }
