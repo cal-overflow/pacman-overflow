@@ -22,7 +22,7 @@
 <body class="flex h-screen justify-center bg-gradient-to-r from-cyan-500 to-blue-700">
   <form id="entrance-form" class="m-auto max-w-screen-md grid grid-rows-10 grid-flow-row gap-y-12 justify-center">
     <div class="text-center row-span-1">
-      <h1 class="text-4xl text-primary ">Pac-Man Overflow</h1>
+      <h1 class="text-4xl text-primary">Pac-Man Overflow</h1>
       <p class="text-xs text-white mt-2">A multiplayer Pac-Man game</p>
     </div>
     <input type="text" maxlength="14" placeholder="Username" name="username" id="username-input" class="row-span-2 p-2 rounded max-w-sm mx-auto" />
@@ -38,6 +38,9 @@
       <p class="text-gray-200 text-xs" id="joining-match-info">Joining a lobby by the URL</p>
     </div>
   </form>
+  <div id="extra-info" class="invisible fixed bottom-0 left-0 right-0">
+    <p class="text-xs text-center text-gray-200">Version <span id="version"></span></p>
+  </div>
 
   <div id="game" class="w-[896px] h-[992px] mx-auto relative hidden">
     <div id="game-board" class="w-[896px] h-[992px] absolute invisible">
@@ -80,10 +83,25 @@
     const privateSubmitBtn = document.getElementById('play-private-button');
     const joinMatchSubmitBtn = document.getElementById('join-match-button');
     const game = document.getElementById('game');
+    const extraInfo = document.getElementById('extra-info');
     const queryParams = new URLSearchParams(window.location.search);
     const username = localStorage.getItem('username');
     const lobby = queryParams.get('lobby');
     let isCreatingPrivateLobby;
+
+    fetch('/version')
+      .then((res) => {
+        if (res.status === 404) {
+          throw new Error('Latest version not found');
+        }
+
+        return res.text();
+      })
+      .then((version) => {
+        document.getElementById('extra-info').classList.add('sm:visible');
+        document.getElementById('version').innerHTML = version;
+      })
+      .catch(console.log);
 
     if (lobby) {
       document.getElementById('joining-lobby-menu').classList.remove('hidden');
@@ -129,6 +147,7 @@
       localStorage.setItem('isCreatingPrivateLobby', isCreatingPrivateLobby);
 
       form.classList.add('hidden');
+      extraInfo.classList.add('hidden');
       game.classList.remove('hidden');
 
       await import('/socket.io/socket.io.js');
