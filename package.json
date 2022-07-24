@@ -4,6 +4,7 @@
   "description": "Multiplayer Pac-Man game.",
   "main": "src/backend/Server.js",
   "scripts": {
+    "postversion": "echo $npm_package_version > src/frontend/version && git add package.json package-lock.json src/frontend/version && git commit -m \"Bump version to ${npm_package_version}\" in version file",
     "dev": "nodemon src/backend/Server.js & npm run tailwind:dev & wait",
     "start": "node src/backend/Server.js & npm run tailwind & wait",
     "test": "jest",
@@ -25,7 +26,10 @@
     "multiplayer",
     "multi-player"
   ],
-  "author": "cal-overflow",
+  "author": {
+    "name": "cal-overflow",
+    "url": "https://www.cal-overflow.dev"
+  },
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/cal-overflow/pacman-overflow/issues"
