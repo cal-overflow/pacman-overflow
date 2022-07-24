@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - "fix-www" # TODO: delete
 
 permissions:
   id-token: write
