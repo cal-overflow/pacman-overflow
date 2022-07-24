@@ -54,20 +54,18 @@ Resources:
     Type: AWS::Route53::RecordSetGroup
     Properties:
       Comment: Route 53 records for Pac-Man Overflow
-      HostedZoneName: pacman-overflow.com
+      HostedZoneName: pacman-overflow.com.
       RecordSets:
       - Name: pacman-overflow.com
         ResourceRecords:
           - !Ref ElasticIP
         TTL: 900
         Type: A
-        HostedZoneName: pacman-overflow.com.
       - Name: www.pacman-overflow.com
         ResourceRecords:
           - !Ref ElasticIP
         TTL: 900
         Type: A
-        HostedZoneName: www.pacman-overflow.com.
 
 Outputs:
   IPAddress:
