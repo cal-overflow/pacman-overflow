@@ -50,15 +50,22 @@ Resources:
     Properties:
       InstanceId: !Ref EC2Instance
 
-  DNSRecord:
-    Type: AWS::Route53::RecordSet
+  RecordSetGroup:
+    Type: AWS::Route53::RecordSetGroup
     Properties:
-      Name: pacman-overflow.com
-      ResourceRecords:
-        - !Ref ElasticIP
-      TTL: 900
-      Type: A
+      Comment: Route 53 records for Pac-Man Overflow
       HostedZoneName: pacman-overflow.com.
+      RecordSets:
+      - Name: pacman-overflow.com
+        ResourceRecords:
+          - !Ref ElasticIP
+        TTL: 900
+        Type: A
+      - Name: www.pacman-overflow.com
+        ResourceRecords:
+          - !Ref ElasticIP
+        TTL: 900
+        Type: A
 
 Outputs:
   IPAddress:
