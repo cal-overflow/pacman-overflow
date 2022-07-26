@@ -117,6 +117,7 @@ export default class Player {
 
   reduce() {
     return {
+      id: this.id,
       name: this.name,
       key: this.key,
       username: this.username,

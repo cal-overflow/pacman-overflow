@@ -1,10 +1,10 @@
 {
   "name": "pacman-overflow",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Multiplayer Pac-Man game.",
   "main": "src/backend/Server.js",
   "scripts": {
-    "postversion": "echo $npm_package_version > src/frontend/version && git add package.json package-lock.json src/frontend/version && git commit -m \"Bump version to ${npm_package_version}\" in version file",
+    "postversion": "echo $npm_package_version > src/frontend/version && git add package.json package-lock.json src/frontend/version && git commit -m \"Bump version to ${npm_package_version} in version file\"",
     "dev": "nodemon src/backend/Server.js & npm run tailwind:dev & wait",
     "start": "node src/backend/Server.js & npm run tailwind & wait",
     "test": "jest",
