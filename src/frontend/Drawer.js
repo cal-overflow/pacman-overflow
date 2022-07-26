@@ -8,6 +8,7 @@ const flashingAnimation = {
 
 const colors = {
   actionMessage: '#FFFFFF',
+  secondaryActionMessage: '#e1e1e1  ',
   readyOrNot: '#545454'
 };
 
@@ -112,6 +113,7 @@ const drawCharacters = ({
   showScores,
   titleText='Select your character',
   actionMessage,
+  secondaryActionMessage,
   showReadyOrNot
 }) => {
   ctx.clearRect(0, 0, board.width, board.height);
@@ -126,6 +128,12 @@ const drawCharacters = ({
     ctx.font = "14px 'Press Start 2P'";
     ctx.fillStyle = colors.actionMessage;
     ctx.fillText(actionMessage, board.width / 2, 800);
+  }
+
+  if (secondaryActionMessage) {
+    ctx.font = "8px 'Press Start 2P'";
+    ctx.fillStyle = colors.secondaryActionMessage;
+    ctx.fillText(secondaryActionMessage, board.width / 2, 820);
   }
 
 
@@ -168,8 +176,17 @@ const drawCharacterSelection = ({
   board,
   players,
   highlightedPlayerKey,
-  actionMessage
+  assignedCharacter,
+  isReadyToPlay
 }) => {
+  let actionMessage;
+  let secondaryActionMessage;
+
+  if (assignedCharacter && !isReadyToPlay) {
+    actionMessage = 'Press space when ready';
+    secondaryActionMessage = 'Press esc to choose a different character';
+  }
+
   drawCharacters({
     ctx,
     board,
@@ -177,6 +194,7 @@ const drawCharacterSelection = ({
     highlightedPlayerKey,
     titleText: 'Select your character',
     actionMessage,
+    secondaryActionMessage,
     showReadyOrNot: true
   });
 };

@@ -42,6 +42,7 @@ const selectPlayer = ({ players }) => {
 
 const handleGameUpdate = (game) => {
   if (!gameStatus && assignedCharacter) {
+    menuCanvas.removeEventListener('mousemove', mousemoveHandler);
     menuCanvas.classList.add('invisible');
     gameBoard.classList.remove('invisible');
     scoreboard.classList.remove('invisible');
@@ -92,17 +93,17 @@ socket.on('joinedLobby', ({ lobbyName, game }) => {
 });
 
 socket.on('characterAssignment', (players) => {
-  assignedCharacter = players.find((player) => player.username === username);
+  assignedCharacter = players.find((player) => player.id === socket.id);
+
   let highlightedPlayerKey;
-  let actionMessage;
 
   if (assignedCharacter) {
+    menuCanvas.classList.remove('cursor-pointer');
     isReadyToPlay = assignedCharacter.isReady;
     highlightedPlayerKey = assignedCharacter.key;
-    actionMessage = 'Press space when ready';
   }
 
-  drawCharacterSelection({ ctx: menuCtx, board, players, highlightedPlayerKey, actionMessage });
+  drawCharacterSelection({ ctx: menuCtx, board, players, highlightedPlayerKey, assignedCharacter, isReadyToPlay });
   copyOfPlayers = players;
 });
 
@@ -139,12 +140,19 @@ document.addEventListener('keydown', (event) => {
     }
 
   }
-  else if (event.key === ' ' || event.code === 'space') {
+  else if (event.key === ' ' || event.code === 'Space') {
+    event.preventDefault();
     if (!gameStatus && assignedCharacter && !isReadyToPlay) {
       socket.emit('readyToPlay');
     }
     if (gameStatus === 'over') {
       window.location.href = '/';
+    }
+  }
+  else if (event.key === 'Escape' || event.code === 'Escape') {
+    event.preventDefault();
+    if (!gameStatus && assignedCharacter && !isReadyToPlay) {
+      socket.emit('cancelSelection');
     }
   }
 });
@@ -189,6 +197,8 @@ const mousemoveHandler = (event) => {
       board,
       players: copyOfPlayers,
       highlightedPlayerKey: hoverEvent.key,
+      assignedCharacter,
+      isReadyToPlay
     });
   }
   prevHoverKey = hoverEvent.key;
@@ -201,9 +211,6 @@ menuCanvas.addEventListener('mousedown', (event) => {
 
   const hoverEvent = getPlayerBeingHoveredOn(event);
   if (hoverEvent.key) {
-    menuCanvas.removeEventListener('mousemove', mousemoveHandler);
-    
-    menuCanvas.classList.remove('cursor-pointer');
     socket.emit('selectCharacter', hoverEvent.key);
   }
 });

@@ -106,6 +106,16 @@ io.on('connection', (socket) => {
     sendCharacterAssignments(socket);
   });
 
+  socket.on('cancelSelection', () => {
+    const player = findPlayer(socket);
+    delete socket.playerKey;
+    delete player.id;
+    delete player.username;
+    player.isCPU = true;
+
+    sendCharacterAssignments(socket);
+  });
+
   socket.on('movePlayer', (movement) => {
     const player = findPlayer(socket);
     player.setMovement(movement);
