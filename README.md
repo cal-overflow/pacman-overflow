@@ -1,8 +1,8 @@
 # Pac-Man Overflow
 
-A *work in progress* Multiplayer Pac-Man game. More details to come...
+An attempt at a Multiplayer Pac-Man game. This project has been archived since [Namco requested that the site be taken down](https://youtu.be/Z-3F3HRuaTY) while the project was still in beta.
 
-Play the latest (beta) version at [pacman-overflow.com](http://pacman-overflow.com).
+Learn more about the project via [this blog post](https://cal-overflow.dev/post/pacman-overflow) or [these dev log videos](https://www.youtube.com/playlist?list=PLkmibBUrq1z3baruH19SBAkc2VUuX7zPZ).
 
 ## Running locally
 
